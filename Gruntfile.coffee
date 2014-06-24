@@ -7,8 +7,8 @@ module.exports = (grunt) ->
           "build/compact.min.js": [
             "src/**/*.js"
           ]
-        #options:
-        #  transform: ["uglifyify"]
+        options:
+          transform: ["uglifyify"]
 
   grunt.registerTask "build", ["browserify"]
   grunt.registerTask "default", ["build"]

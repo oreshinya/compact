@@ -2,7 +2,7 @@
   "name": "compact",
   "version": "0.0.1",
   "description": "model logic and storage wrapper",
-  "main": "index.js",
+  "main": "build/compact.min.js",
   "scripts": {
     "test": "grunt test"
   },
