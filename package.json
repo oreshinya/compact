@@ -12,8 +12,10 @@
     "grunt-browserify": "^2.1.0",
     "grunt-karma": "^0.8.3",
     "karma": "^0.12.16",
+    "karma-chrome-launcher": "^0.1.4",
     "karma-mocha": "^0.1.4",
     "karma-phantomjs-launcher": "^0.1.4",
+    "karma-safari-launcher": "^0.1.1",
     "mocha": "^1.20.1",
     "power-assert": "^0.7.2",
     "uglifyify": "^2.4.0"

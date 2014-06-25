@@ -38,7 +38,7 @@ module.exports = (grunt) ->
             './test/build/**/*_spec.js'
           ]
           browsers:[
-            'PhantomJS'
+            'PhantomJS', 'Safari', 'Chrome'
           ]
           reporters: 'dots'
           singleRun: true
