@@ -22,5 +22,6 @@
   "dependencies": {
     "localforage": "~0.8.1",
     "uuid-js": "~0.7.5"
-  }
+  },
+  "devDependencies": {}
 }
