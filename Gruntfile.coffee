@@ -24,6 +24,8 @@ module.exports = (grunt) ->
           "test/build/compact_spec.js": [
             "test/src/**/*_spec.js"
           ]
+        options:
+          transform: ["espowerify"]
 
     karma:
       unit:

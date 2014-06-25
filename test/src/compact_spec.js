@@ -6,9 +6,7 @@ describe('Compact', function(){
 
     describe('Compact.extend', function(){
 
-      context('does not receive storageKey', function(){
-        it('occur Error', function(){});
-      });
+      context('does not receive storageKey', function(){});
 
       context('does not receive instanceMethods', function(){});
 
