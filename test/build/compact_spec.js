@@ -9516,262 +9516,301 @@ module.exports = {
 
 },{}],23:[function(require,module,exports){
 var assert = require('power-assert'), compact = require('../../src/compact.js');
-describe('compact', function () {
-    describe('core', function () {
-        describe('compact.extend', function () {
-            context('does not receive storageKey', function () {
-                it('occur Error', function () {
-                    assert.throws(compact.extend);
-                });
-            });
-            context('receive storageKey', function () {
-                before(function () {
-                    this.User = compact.extend('user');
-                    this.ownedCount = 0;
-                    this.defaultPropertyCount = 0;
-                    var key;
-                    for (key in compact) {
-                        this.defaultPropertyCount++;
-                        if (this.User[key]) {
-                            this.ownedCount++;
-                        }
-                    }
-                });
-                it('returned object has compact\'s properties', function () {
-                    assert(assert._expr(assert._capt(assert._capt(this.ownedCount, 'arguments/0/left') === assert._capt(this.defaultPropertyCount, 'arguments/0/right'), 'arguments/0'), {
-                        content: 'assert(this.ownedCount === this.defaultPropertyCount)',
-                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                        line: 33
-                    }));
-                });
-                it('returned object has init method', function () {
-                    assert(assert._expr(assert._capt(assert._capt(this.User, 'arguments/0/callee/object').hasOwnProperty('init'), 'arguments/0'), {
-                        content: 'assert(this.User.hasOwnProperty("init"))',
-                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                        line: 37
-                    }));
-                });
-                it('returned object has _storageKey: \'user\'', function () {
-                    assert(assert._expr(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object')._storageKey, 'arguments/0/left') === 'user', 'arguments/0'), {
-                        content: 'assert(this.User._storageKey === \'user\')',
-                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                        line: 41
-                    }));
-                });
-                context('when add methods to extended model', function () {
-                    before(function () {
-                        this.User.sample = function () {
-                        };
-                    });
-                    it('compact does not have added method at extended model', function () {
-                        assert(assert._expr(assert._capt(!assert._capt(assert._capt(compact, 'arguments/0/argument/object').sample, 'arguments/0/argument'), 'arguments/0'), {
-                            content: 'assert(!compact.sample)',
-                            filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                            line: 51
-                        }));
-                    });
-                });
+describe('core', function () {
+    describe('compact.extend', function () {
+        context('does not receive storageKey', function () {
+            it('occur Error', function () {
+                assert.throws(compact.extend);
             });
         });
-        describe('compact.init', function () {
+        context('receive storageKey', function () {
             before(function () {
-                var User = compact.extend('user'), key;
+                this.User = compact.extend('user');
                 this.ownedCount = 0;
                 this.defaultPropertyCount = 0;
-                this.user = User.init();
-                this.instance = require('../../src/instance.js');
-                for (key in this.instance) {
+                var key;
+                for (key in compact) {
                     this.defaultPropertyCount++;
-                    if (this.user[key]) {
+                    if (this.User[key]) {
                         this.ownedCount++;
                     }
                 }
             });
-            it('returned object has instance properties', function () {
-                assert(assert._expr(assert._capt(assert._capt(this.defaultPropertyCount, 'arguments/0/left') === assert._capt(this.ownedCount, 'arguments/0/right'), 'arguments/0'), {
-                    content: 'assert(this.defaultPropertyCount === this.ownedCount)',
-                    filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                    line: 81
+            it('returned object has compact\'s properties', function () {
+                assert(assert._expr(assert._capt(assert._capt(this.ownedCount, 'arguments/0/left') === assert._capt(this.defaultPropertyCount, 'arguments/0/right'), 'arguments/0'), {
+                    content: 'assert(this.ownedCount === this.defaultPropertyCount)',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
+                    line: 31
                 }));
             });
-            context('if receive instanceMethods when extended', function () {
+            it('returned object has init method', function () {
+                assert(assert._expr(assert._capt(assert._capt(this.User, 'arguments/0/callee/object').hasOwnProperty('init'), 'arguments/0'), {
+                    content: 'assert(this.User.hasOwnProperty("init"))',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
+                    line: 35
+                }));
+            });
+            it('returned object has _storageKey: \'user\'', function () {
+                assert(assert._expr(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object')._storageKey, 'arguments/0/left') === 'user', 'arguments/0'), {
+                    content: 'assert(this.User._storageKey === \'user\')',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
+                    line: 39
+                }));
+            });
+            context('when add methods to extended model', function () {
                 before(function () {
-                    var User = compact.extend('user', {
-                            sample: function () {
-                            }
-                        });
-                    this.user = User.init();
+                    this.User.sample = function () {
+                    };
                 });
-                it('returned instance has \'instanceMethods\'', function () {
-                    assert(assert._expr(assert._capt(assert._capt(this.user, 'arguments/0/callee/object').hasOwnProperty('sample'), 'arguments/0'), {
-                        content: 'assert(this.user.hasOwnProperty(\'sample\'))',
-                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                        line: 94
-                    }));
-                });
-                it('compact default instance does not have added instanceMethods', function () {
-                    assert(assert._expr(assert._capt(!assert._capt(assert._capt(this.instance, 'arguments/0/argument/callee/object').hasOwnProperty('sample'), 'arguments/0/argument'), 'arguments/0'), {
-                        content: 'assert(!this.instance.hasOwnProperty(\'sample\'))',
-                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                        line: 98
+                it('compact does not have added method at extended model', function () {
+                    assert(assert._expr(assert._capt(!assert._capt(assert._capt(compact, 'arguments/0/argument/object').sample, 'arguments/0/argument'), 'arguments/0'), {
+                        content: 'assert(!compact.sample)',
+                        filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
+                        line: 49
                     }));
                 });
             });
         });
     });
-    describe('instance', function () {
+    describe('compact.init', function () {
         before(function () {
-            this.User = compact.extend('user');
-            this.testUserId = 200;
+            var User = compact.extend('user'), key;
+            this.ownedCount = 0;
+            this.defaultPropertyCount = 0;
+            this.user = User.init();
+            this.instance = require('../../src/instance.js');
+            for (key in this.instance) {
+                this.defaultPropertyCount++;
+                if (this.user[key]) {
+                    this.ownedCount++;
+                }
+            }
+        });
+        it('returned object has instance properties', function () {
+            assert(assert._expr(assert._capt(assert._capt(this.defaultPropertyCount, 'arguments/0/left') === assert._capt(this.ownedCount, 'arguments/0/right'), 'arguments/0'), {
+                content: 'assert(this.defaultPropertyCount === this.ownedCount)',
+                filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
+                line: 79
+            }));
+        });
+        context('if receive instanceMethods when extended', function () {
+            before(function () {
+                var User = compact.extend('user', {
+                        sample: function () {
+                        }
+                    });
+                this.user = User.init();
+            });
+            it('returned instance has \'instanceMethods\'', function () {
+                assert(assert._expr(assert._capt(assert._capt(this.user, 'arguments/0/callee/object').hasOwnProperty('sample'), 'arguments/0'), {
+                    content: 'assert(this.user.hasOwnProperty(\'sample\'))',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
+                    line: 92
+                }));
+            });
+            it('compact default instance does not have added instanceMethods', function () {
+                assert(assert._expr(assert._capt(!assert._capt(assert._capt(this.instance, 'arguments/0/argument/callee/object').hasOwnProperty('sample'), 'arguments/0/argument'), 'arguments/0'), {
+                    content: 'assert(!this.instance.hasOwnProperty(\'sample\'))',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
+                    line: 96
+                }));
+            });
+        });
+    });
+});
+
+
+},{"../../src/compact.js":16,"../../src/instance.js":19,"power-assert":6}],24:[function(require,module,exports){
+var assert = require('power-assert'), compact = require('../../src/compact.js'), utils = require('../../src/utils.js');
+describe('finder', function () {
+    before(function () {
+        this.User = compact.extend('user');
+        this.User.destroy();
+    });
+    describe('compact.all', function () {
+        it('return Array', function () {
+            assert(assert._expr(assert._capt(assert._capt(utils, 'arguments/0/callee/object').is('Array', assert._capt(assert._capt(this.User, 'arguments/0/arguments/1/callee/object').all(), 'arguments/0/arguments/1')), 'arguments/0'), {
+                content: 'assert(utils.is("Array", this.User.all()))',
+                filepath: '/Users/shinyatakahashi/working/compact/test/src/finder_spec.js',
+                line: 15
+            }));
+        });
+        context('record is empty', function () {
+            it('returned empty Array', function () {
+                assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/callee/object').all(), 'arguments/0/left/object').length, 'arguments/0/left') === 0, 'arguments/0'), {
+                    content: 'assert(this.User.all().length === 0)',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/finder_spec.js',
+                    line: 21
+                }));
+            });
+        });
+        context('record is not empty', function () {
+            before(function () {
+                this.user = this.User.init();
+                this.user.id = 1;
+                this.user.name = 'Mike';
+                this.user.save();
+            });
+            it('returned Array has object', function () {
+                assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/callee/object').all(), 'arguments/0/left/object').length, 'arguments/0/left') > 0, 'arguments/0'), {
+                    content: 'assert(this.User.all().length > 0)',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/finder_spec.js',
+                    line: 36
+                }));
+            });
+        });
+    });
+    describe('compact.find', function () {
+        context('record is not found', function () {
+        });
+        context('record is found', function () {
+        });
+    });
+});
+
+
+},{"../../src/compact.js":16,"../../src/utils.js":21,"power-assert":6}],25:[function(require,module,exports){
+var assert = require('power-assert'), compact = require('../../src/compact.js');
+describe('instance', function () {
+    before(function () {
+        this.User = compact.extend('user');
+        this.testUserId = 200;
+        this.user = this.User.init();
+        this.user.id = this.testUserId;
+        this.user.name = 'Mike';
+        this.user.save();
+    });
+    describe('compact#save', function () {
+        it('_records has instance\'s attributes', function () {
+            assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/object/object')._records, 'arguments/0/left/object/object')[assert._capt(assert._capt(this.user, 'arguments/0/left/object/property/object').id, 'arguments/0/left/object/property')], 'arguments/0/left/object').name, 'arguments/0/left') === assert._capt(assert._capt(this.user, 'arguments/0/right/object').name, 'arguments/0/right'), 'arguments/0'), {
+                content: 'assert(this.user._records[this.user.id].name === this.user.name)',
+                filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
+                line: 18
+            }));
+        });
+        it('link to parent object\'s _records property', function () {
+            assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/object')._records, 'arguments/0/left/object')[assert._capt(assert._capt(this.user, 'arguments/0/left/property/object').id, 'arguments/0/left/property')], 'arguments/0/left') && assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/right/object/object')._records, 'arguments/0/right/object')[assert._capt(assert._capt(this.user, 'arguments/0/right/property/object').id, 'arguments/0/right/property')], 'arguments/0/right'), 'arguments/0'), {
+                content: 'assert(this.user._records[this.user.id] && this.User._records[this.user.id])',
+                filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
+                line: 22
+            }));
+        });
+        context('instance does not have id', function () {
+            before(function () {
+                this.user = this.User.init();
+            });
+            it('returned object has id', function () {
+                assert(assert._expr(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/object/callee/object').save(), 'arguments/0/object').id, 'arguments/0'), {
+                    content: 'assert(this.user.save().id)',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
+                    line: 32
+                }));
+            });
+        });
+        context('instance has id', function () {
+            before(function () {
+                this.user = this.User.init();
+                this.userId = 1;
+                this.user.id = this.userId;
+            });
+            it('returned object, it\'s id is not changed before save', function () {
+                assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/callee/object').save(), 'arguments/0/left/object').id, 'arguments/0/left') === assert._capt(this.userId, 'arguments/0/right'), 'arguments/0'), {
+                    content: 'assert(this.user.save().id === this.userId)',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
+                    line: 46
+                }));
+            });
+        });
+    });
+    describe('compact#destroy', function () {
+        before(function () {
+            var user = this.User.find(this.testUserId);
+            user.destroy();
+        });
+        it('delete _records property', function () {
+            assert(assert._expr(assert._capt(!assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/argument/object/object')._records, 'arguments/0/argument/object')[assert._capt(this.testUserId, 'arguments/0/argument/property')], 'arguments/0/argument'), 'arguments/0'), {
+                content: 'assert(!this.User._records[this.testUserId])',
+                filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
+                line: 61
+            }));
+        });
+    });
+    describe('compact#attributes', function () {
+        before(function () {
             this.user = this.User.init();
             this.user.id = this.testUserId;
             this.user.name = 'Mike';
             this.user.save();
         });
-        describe('compact#save', function () {
-            it('_records has instance\'s attributes', function () {
-                assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/object/object')._records, 'arguments/0/left/object/object')[assert._capt(assert._capt(this.user, 'arguments/0/left/object/property/object').id, 'arguments/0/left/object/property')], 'arguments/0/left/object').name, 'arguments/0/left') === assert._capt(assert._capt(this.user, 'arguments/0/right/object').name, 'arguments/0/right'), 'arguments/0'), {
-                    content: 'assert(this.user._records[this.user.id].name === this.user.name)',
-                    filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                    line: 121
-                }));
-            });
-            it('link to parent object\'s _records property', function () {
-                assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/object')._records, 'arguments/0/left/object')[assert._capt(assert._capt(this.user, 'arguments/0/left/property/object').id, 'arguments/0/left/property')], 'arguments/0/left') && assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/right/object/object')._records, 'arguments/0/right/object')[assert._capt(assert._capt(this.user, 'arguments/0/right/property/object').id, 'arguments/0/right/property')], 'arguments/0/right'), 'arguments/0'), {
-                    content: 'assert(this.user._records[this.user.id] && this.User._records[this.user.id])',
-                    filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                    line: 125
-                }));
-            });
-            context('instance does not have id', function () {
-                before(function () {
-                    this.user = this.User.init();
-                });
-                it('returned object has id', function () {
-                    assert(assert._expr(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/object/callee/object').save(), 'arguments/0/object').id, 'arguments/0'), {
-                        content: 'assert(this.user.save().id)',
-                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                        line: 135
-                    }));
-                });
-            });
-            context('instance has id', function () {
-                before(function () {
-                    this.user = this.User.init();
-                    this.userId = 1;
-                    this.user.id = this.userId;
-                });
-                it('returned object, it\'s id is not changed before save', function () {
-                    assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/callee/object').save(), 'arguments/0/left/object').id, 'arguments/0/left') === assert._capt(this.userId, 'arguments/0/right'), 'arguments/0'), {
-                        content: 'assert(this.user.save().id === this.userId)',
-                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                        line: 149
-                    }));
-                });
-            });
+        it('returned object has only \'name\' property', function () {
+            var attrs = this.user.attributes();
+            assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(Object, 'arguments/0/left/left/left/object/callee/object').keys(assert._capt(attrs, 'arguments/0/left/left/left/object/arguments/0')), 'arguments/0/left/left/left/object').length, 'arguments/0/left/left/left') === 2, 'arguments/0/left/left') && assert._capt(assert._capt(attrs, 'arguments/0/left/right/callee/object').hasOwnProperty('id'), 'arguments/0/left/right'), 'arguments/0/left') && assert._capt(assert._capt(attrs, 'arguments/0/right/callee/object').hasOwnProperty('name'), 'arguments/0/right'), 'arguments/0'), {
+                content: 'assert(Object.keys(attrs).length === 2 && attrs.hasOwnProperty(\'id\') && attrs.hasOwnProperty(\'name\'))',
+                filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
+                line: 77
+            }));
         });
-        describe('compact#destroy', function () {
-            before(function () {
-                var user = this.User.find(this.testUserId);
-                user.destroy();
-            });
-            it('delete _records property', function () {
-                assert(assert._expr(assert._capt(!assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/argument/object/object')._records, 'arguments/0/argument/object')[assert._capt(this.testUserId, 'arguments/0/argument/property')], 'arguments/0/argument'), 'arguments/0'), {
-                    content: 'assert(!this.User._records[this.testUserId])',
-                    filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                    line: 164
-                }));
-            });
-        });
-        describe('compact#attributes', function () {
-            before(function () {
-                this.user = this.User.init();
-                this.user.id = this.testUserId;
-                this.user.name = 'Mike';
-                this.user.save();
-            });
-            it('returned object has only \'name\' property', function () {
-                var attrs = this.user.attributes();
-                assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(Object, 'arguments/0/left/left/left/object/callee/object').keys(assert._capt(attrs, 'arguments/0/left/left/left/object/arguments/0')), 'arguments/0/left/left/left/object').length, 'arguments/0/left/left/left') === 2, 'arguments/0/left/left') && assert._capt(assert._capt(attrs, 'arguments/0/left/right/callee/object').hasOwnProperty('id'), 'arguments/0/left/right'), 'arguments/0/left') && assert._capt(assert._capt(attrs, 'arguments/0/right/callee/object').hasOwnProperty('name'), 'arguments/0/right'), 'arguments/0'), {
-                    content: 'assert(Object.keys(attrs).length === 2 && attrs.hasOwnProperty(\'id\') && attrs.hasOwnProperty(\'name\'))',
-                    filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                    line: 180
-                }));
-            });
-        });
-    });
-    describe('writer', function () {
-        before(function () {
-            this.User = compact.extend('user');
-        });
-        describe('compact.save', function () {
-            context('data has id', function () {
-                before(function () {
-                    this.testUserId = 100;
-                    this.userData = [{
-                            id: this.testUserId,
-                            name: 'Ken'
-                        }];
-                });
-                it('return true', function () {
-                    assert(assert._expr(assert._capt(assert._capt(this.User, 'arguments/0/callee/object').save(assert._capt(this.userData, 'arguments/0/arguments/0')), 'arguments/0'), {
-                        content: 'assert(this.User.save(this.userData))',
-                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                        line: 203
-                    }));
-                });
-                it('link to instance object\'s _records property', function () {
-                    var user = this.User.find(this.testUserId);
-                    assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/object')._records, 'arguments/0/left/object')[assert._capt(this.testUserId, 'arguments/0/left/property')], 'arguments/0/left') && assert._capt(assert._capt(assert._capt(user, 'arguments/0/right/object/object')._records, 'arguments/0/right/object')[assert._capt(this.testUserId, 'arguments/0/right/property')], 'arguments/0/right'), 'arguments/0'), {
-                        content: 'assert(this.User._records[this.testUserId] && user._records[this.testUserId])',
-                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                        line: 208
-                    }));
-                });
-            });
-            context('data does not have id', function () {
-                before(function () {
-                    this.userData = [{ name: 'Go' }];
-                });
-                it('return false', function () {
-                    assert(assert._expr(assert._capt(!assert._capt(assert._capt(this.User, 'arguments/0/argument/callee/object').save(assert._capt(this.userData, 'arguments/0/argument/arguments/0')), 'arguments/0/argument'), 'arguments/0'), {
-                        content: 'assert(!this.User.save(this.userData))',
-                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                        line: 220
-                    }));
-                });
-            });
-        });
-        describe('compact.destroy', function () {
-            before(function () {
-                this.User.destroy();
-            });
-            it('_records is empty object', function () {
-                assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(Object, 'arguments/0/left/object/callee/object').keys(assert._capt(assert._capt(this.User, 'arguments/0/left/object/arguments/0/object')._records, 'arguments/0/left/object/arguments/0')), 'arguments/0/left/object').length, 'arguments/0/left') === 0, 'arguments/0'), {
-                    content: 'assert(Object.keys(this.User._records).length === 0)',
-                    filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                    line: 233
-                }));
-            });
-        });
-    });
-    describe('finder', function () {
-        describe('compact.all', function () {
-            context('record is empty', function () {
-            });
-            context('record is not empty', function () {
-            });
-        });
-        describe('compact.find', function () {
-            context('record is not found', function () {
-            });
-            context('record is found', function () {
-            });
-        });
-    });
-    describe('store', function () {
     });
 });
 
 
-},{"../../src/compact.js":16,"../../src/instance.js":19,"power-assert":6}]},{},[23])
+},{"../../src/compact.js":16,"power-assert":6}],26:[function(require,module,exports){
+var assert = require('power-assert'), compact = require('../../src/compact.js');
+describe('writer', function () {
+    before(function () {
+        this.User = compact.extend('user');
+    });
+    describe('compact.save', function () {
+        context('data has id', function () {
+            before(function () {
+                this.testUserId = 100;
+                this.userData = [{
+                        id: this.testUserId,
+                        name: 'Ken'
+                    }];
+            });
+            it('return true', function () {
+                assert(assert._expr(assert._capt(assert._capt(this.User, 'arguments/0/callee/object').save(assert._capt(this.userData, 'arguments/0/arguments/0')), 'arguments/0'), {
+                    content: 'assert(this.User.save(this.userData))',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/writer_spec.js',
+                    line: 20
+                }));
+            });
+            it('link to instance object\'s _records property', function () {
+                var user = this.User.find(this.testUserId);
+                assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/object')._records, 'arguments/0/left/object')[assert._capt(this.testUserId, 'arguments/0/left/property')], 'arguments/0/left') && assert._capt(assert._capt(assert._capt(user, 'arguments/0/right/object/object')._records, 'arguments/0/right/object')[assert._capt(this.testUserId, 'arguments/0/right/property')], 'arguments/0/right'), 'arguments/0'), {
+                    content: 'assert(this.User._records[this.testUserId] && user._records[this.testUserId])',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/writer_spec.js',
+                    line: 25
+                }));
+            });
+        });
+        context('data does not have id', function () {
+            before(function () {
+                this.userData = [{ name: 'Go' }];
+            });
+            it('return false', function () {
+                assert(assert._expr(assert._capt(!assert._capt(assert._capt(this.User, 'arguments/0/argument/callee/object').save(assert._capt(this.userData, 'arguments/0/argument/arguments/0')), 'arguments/0/argument'), 'arguments/0'), {
+                    content: 'assert(!this.User.save(this.userData))',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/writer_spec.js',
+                    line: 37
+                }));
+            });
+        });
+    });
+    describe('compact.destroy', function () {
+        before(function () {
+            this.User.destroy();
+        });
+        it('_records is empty object', function () {
+            assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(Object, 'arguments/0/left/object/callee/object').keys(assert._capt(assert._capt(this.User, 'arguments/0/left/object/arguments/0/object')._records, 'arguments/0/left/object/arguments/0')), 'arguments/0/left/object').length, 'arguments/0/left') === 0, 'arguments/0'), {
+                content: 'assert(Object.keys(this.User._records).length === 0)',
+                filepath: '/Users/shinyatakahashi/working/compact/test/src/writer_spec.js',
+                line: 50
+            }));
+        });
+    });
+});
+
+
+},{"../../src/compact.js":16,"power-assert":6}]},{},[23,24,25,26])
