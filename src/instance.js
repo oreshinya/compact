@@ -6,11 +6,12 @@ module.exports = {
 
   save: function() {
     if ( !this.id ) {
-      this.id = UUID.create().toString();
+      this.id = UUIDjs.create().toString();
     }
 
     var attrs = this.attributes();
     this._records[this.id] = attrs;
+    return this;
   },
 
   destroy: function() {

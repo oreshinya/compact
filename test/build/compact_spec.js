@@ -9377,19 +9377,332 @@ this['DIFF_INSERT'] = DIFF_INSERT;
 this['DIFF_EQUAL'] = DIFF_EQUAL;
 
 },{}],16:[function(require,module,exports){
-var assert = require('power-assert');
-describe('Compact', function () {
+var compact = {};
+var utils = require('./utils.js'), core = require('./core.js'), finder = require('./finder.js'), writer = require('./writer.js'), store = require('./store.js');
+utils.extend(compact, core);
+utils.extend(compact, finder);
+utils.extend(compact, writer);
+utils.extend(compact, store);
+module.exports = compact;
+
+
+},{"./core.js":17,"./finder.js":18,"./store.js":20,"./utils.js":21,"./writer.js":22}],17:[function(require,module,exports){
+var instance = require('./instance.js'), utils = require('./utils.js');
+module.exports = {
+    _records: {},
+    _storageKey: null,
+    _createInit: function (instanceMethods) {
+        var _records = this._records;
+        var fn = function (attributes) {
+            var inst = Object.create(instance);
+            inst._records = _records;
+            utils.extend(inst, attributes);
+            if (instanceMethods) {
+                utils.extend(inst, instanceMethods);
+            }
+            return inst;
+        };
+        return fn;
+    },
+    extend: function (storageKey, instanceMethods) {
+        if (!storageKey) {
+            throw 'storageKey should not be null, undefined';
+        }
+        var model = Object.create(this);
+        model._storageKey = storageKey;
+        model.init = this._createInit(instanceMethods);
+        return model;
+    }
+};
+
+
+},{"./instance.js":19,"./utils.js":21}],18:[function(require,module,exports){
+module.exports = {
+    all: function () {
+        var instances = [], id, inst;
+        for (id in this._records) {
+            inst = this.init(this._records[id]);
+            instances.push(inst);
+        }
+        return instances;
+    },
+    find: function (id) {
+        var attrs = this._records[id];
+        if (!attrs) {
+            return null;
+        }
+        return this.init(attrs);
+    }
+};
+
+
+},{}],19:[function(require,module,exports){
+var utils = require('./utils.js');
+module.exports = {
+    _records: null,
+    save: function () {
+        if (!this.id) {
+            this.id = UUIDjs.create().toString();
+        }
+        var attrs = this.attributes();
+        this._records[this.id] = attrs;
+        return this;
+    },
+    destroy: function () {
+        delete this._records[this.id];
+    },
+    attributes: function () {
+        var attrs = {}, key;
+        for (key in this) {
+            if (this.isAttribute(key)) {
+                attrs[key] = this[key];
+            }
+        }
+        return attrs;
+    },
+    isAttribute: function (key) {
+        var isRecords = key === '_records', isFunction = utils.is('Function', this[key]);
+        return !isRecords && !isFunction;
+    }
+};
+
+
+},{"./utils.js":21}],20:[function(require,module,exports){
+module.exports = {
+    saveDb: function (callback) {
+        var key = this._storageKey, item = JSON.stringify(this._records);
+        localforage.setItem(key, item, callback);
+    },
+    loadDb: function (callback) {
+        var key = this._storageKey;
+        localforage.getItem(key, callback);
+    }
+};
+
+
+},{}],21:[function(require,module,exports){
+module.exports = {
+    extend: function (to, from) {
+        var key;
+        for (key in from) {
+            to[key] = from[key];
+        }
+    },
+    is: function (type, obj) {
+        var klass = Object.prototype.toString.call(obj).slice(8, -1);
+        return obj && klass === type;
+    }
+};
+
+
+},{}],22:[function(require,module,exports){
+module.exports = {
+    save: function (values) {
+        var i = 0, val;
+        for (; i < values.length; i++) {
+            val = values[i];
+            if (!val.id) {
+                return false;
+            }
+            this._records[val.id] = val;
+        }
+        return true;
+    },
+    destroy: function () {
+        this._records = {};
+    }
+};
+
+
+},{}],23:[function(require,module,exports){
+var assert = require('power-assert'), compact = require('../../src/compact.js');
+describe('compact', function () {
     describe('core', function () {
-        describe('Compact.extend', function () {
+        describe('compact.extend', function () {
             context('does not receive storageKey', function () {
+                it('occur Error', function () {
+                    assert.throws(compact.extend);
+                });
             });
-            context('does not receive instanceMethods', function () {
-            });
-            context('receive storageKey and instanceMethods', function () {
+            context('receive storageKey', function () {
+                before(function () {
+                    this.User = compact.extend('user');
+                    this.ownedCount = 0;
+                    this.defaultPropertyCount = 0;
+                    var key;
+                    for (key in compact) {
+                        this.defaultPropertyCount++;
+                        if (this.User[key]) {
+                            this.ownedCount++;
+                        }
+                    }
+                });
+                it('returned object has compact\'s properties', function () {
+                    assert(assert._expr(assert._capt(assert._capt(this.ownedCount, 'arguments/0/left') === assert._capt(this.defaultPropertyCount, 'arguments/0/right'), 'arguments/0'), {
+                        content: 'assert(this.ownedCount === this.defaultPropertyCount)',
+                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                        line: 33
+                    }));
+                });
+                it('returned object has init method', function () {
+                    assert(assert._expr(assert._capt(assert._capt(this.User, 'arguments/0/callee/object').hasOwnProperty('init'), 'arguments/0'), {
+                        content: 'assert(this.User.hasOwnProperty("init"))',
+                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                        line: 37
+                    }));
+                });
+                it('returned object has _storageKey: \'user\'', function () {
+                    assert(assert._expr(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object')._storageKey, 'arguments/0/left') === 'user', 'arguments/0'), {
+                        content: 'assert(this.User._storageKey === \'user\')',
+                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                        line: 41
+                    }));
+                });
+                context('when add methods to extended model', function () {
+                    before(function () {
+                        this.User.sample = function () {
+                        };
+                    });
+                    it('compact does not have added method at extended model', function () {
+                        assert(assert._expr(assert._capt(!assert._capt(assert._capt(compact, 'arguments/0/argument/object').sample, 'arguments/0/argument'), 'arguments/0'), {
+                            content: 'assert(!compact.sample)',
+                            filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                            line: 51
+                        }));
+                    });
+                });
             });
         });
+        describe('compact.init', function () {
+            before(function () {
+                var User = compact.extend('user'), key;
+                this.ownedCount = 0;
+                this.defaultPropertyCount = 0;
+                this.user = User.init();
+                this.instance = require('../../src/instance.js');
+                for (key in this.instance) {
+                    this.defaultPropertyCount++;
+                    if (this.user[key]) {
+                        this.ownedCount++;
+                    }
+                }
+            });
+            it('returned object has instance properties', function () {
+                assert(assert._expr(assert._capt(assert._capt(this.defaultPropertyCount, 'arguments/0/left') === assert._capt(this.ownedCount, 'arguments/0/right'), 'arguments/0'), {
+                    content: 'assert(this.defaultPropertyCount === this.ownedCount)',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                    line: 81
+                }));
+            });
+            context('if receive instanceMethods when extended', function () {
+                before(function () {
+                    var User = compact.extend('user', {
+                            sample: function () {
+                            }
+                        });
+                    this.user = User.init();
+                });
+                it('returned instance has \'instanceMethods\'', function () {
+                    assert(assert._expr(assert._capt(assert._capt(this.user, 'arguments/0/callee/object').hasOwnProperty('sample'), 'arguments/0'), {
+                        content: 'assert(this.user.hasOwnProperty(\'sample\'))',
+                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                        line: 94
+                    }));
+                });
+                it('compact default instance does not have added instanceMethods', function () {
+                    assert(assert._expr(assert._capt(!assert._capt(assert._capt(this.instance, 'arguments/0/argument/callee/object').hasOwnProperty('sample'), 'arguments/0/argument'), 'arguments/0'), {
+                        content: 'assert(!this.instance.hasOwnProperty(\'sample\'))',
+                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                        line: 98
+                    }));
+                });
+            });
+        });
+    });
+    describe('instance', function () {
+        before(function () {
+            this.User = compact.extend('user');
+        });
+        describe('compact#save', function () {
+            before(function () {
+                this.user = this.User.init();
+                this.user.id = 200;
+                this.user.name = 'Mike';
+                this.user.save();
+            });
+            it('_records has instance\'s attributes', function () {
+                assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/object/object')._records, 'arguments/0/left/object/object')[assert._capt(assert._capt(this.user, 'arguments/0/left/object/property/object').id, 'arguments/0/left/object/property')], 'arguments/0/left/object').name, 'arguments/0/left') === assert._capt(assert._capt(this.user, 'arguments/0/right/object').name, 'arguments/0/right'), 'arguments/0'), {
+                    content: 'assert(this.user._records[this.user.id].name === this.user.name)',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                    line: 123
+                }));
+            });
+            it('link to parent object\'s _records property', function () {
+                assert(assert._expr(assert._capt(assert._capt(!assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/argument/object/object')._records, 'arguments/0/left/argument/object')[assert._capt(assert._capt(this.user, 'arguments/0/left/argument/property/object').id, 'arguments/0/left/argument/property')], 'arguments/0/left/argument'), 'arguments/0/left') && assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/right/object/object')._records, 'arguments/0/right/object')[assert._capt(assert._capt(this.user, 'arguments/0/right/property/object').id, 'arguments/0/right/property')], 'arguments/0/right'), 'arguments/0'), {
+                    content: 'assert(!this.user._records[this.user.id] && this.User._records[this.user.id])',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                    line: 128
+                }));
+            });
+            context('instance does not have id', function () {
+                before(function () {
+                    this.user = this.User.init();
+                });
+                it('returned object has id', function () {
+                    assert(assert._expr(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/object/callee/object').save(), 'arguments/0/object').id, 'arguments/0'), {
+                        content: 'assert(this.user.save().id)',
+                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                        line: 138
+                    }));
+                });
+            });
+            context('instance has id', function () {
+                before(function () {
+                    this.user = this.User.init();
+                    this.userId = 1;
+                    this.user.id = this.userId;
+                });
+                it('returned object, it\'s id is not changed before save', function () {
+                    assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/callee/object').save(), 'arguments/0/left/object').id, 'arguments/0/left') === assert._capt(this.userId, 'arguments/0/right'), 'arguments/0'), {
+                        content: 'assert(this.user.save().id === this.userId)',
+                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                        line: 152
+                    }));
+                });
+            });
+        });
+        describe('compact#destroy', function () {
+        });
+        describe('compact#attributes', function () {
+        });
+        describe('compact#isAttribute', function () {
+        });
+    });
+    describe('writer', function () {
+        describe('compact.save', function () {
+            it('link to instance object\'s _records property', function () {
+            });
+        });
+        describe('compact.destroy', function () {
+        });
+    });
+    describe('finder', function () {
+        describe('compact.all', function () {
+            context('record is empty', function () {
+            });
+            context('record is not empty', function () {
+            });
+        });
+        describe('compact.find', function () {
+            context('record is not found', function () {
+            });
+            context('record is found', function () {
+            });
+        });
+    });
+    describe('store', function () {
     });
 });
 
 
-},{"power-assert":6}]},{},[16])
+},{"../../src/compact.js":16,"../../src/instance.js":19,"power-assert":6}]},{},[23])
