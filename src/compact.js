@@ -1,4 +1,4 @@
-var Compact = {};
+var compact = {};
 
 var utils = require("./utils.js"),
     core = require("./core.js"),
