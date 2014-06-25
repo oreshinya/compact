@@ -1,18 +1,16 @@
 var instance = require("./instance.js"),
-    utils = require("./utils.js");
+    utils = require("./utils.js"),
+    memory = require("./memory.js");
 
 module.exports = {
-
-  _records: {},
 
   _storageKey: null,
 
   _createInit: function(instanceMethods) {
-    var _records = this._records;
-
+    var klass = this;
     var fn = function(attributes) {
       var inst = Object.create(instance);
-      inst._records = _records;
+      inst.klass = klass;
 
       utils.extend(inst, attributes);
       if ( instanceMethods ) {
@@ -30,9 +28,10 @@ module.exports = {
       throw("storageKey should not be null, undefined");
     }
 
+    memory.init(storageKey);
     var model = Object.create(this);
     model._storageKey = storageKey;
-    model.init = this._createInit(instanceMethods);
+    model.init = model._createInit(instanceMethods);
     return model;
   }
 

@@ -1,3 +1,5 @@
+var memory = require("./memory.js");
+
 module.exports = {
 
   save: function(values) {
@@ -10,14 +12,15 @@ module.exports = {
         return false;
       }
 
-      this._records[val.id] = val;
+      var records = memory.get(this._storageKey);
+      records[val.id] = val;
     }
 
     return true;
   },
 
   destroy: function() {
-    this._records = {};
+    memory.init(this._storageKey);
   }
 
 };

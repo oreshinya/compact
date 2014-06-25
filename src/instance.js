@@ -1,21 +1,24 @@
-var  utils = require("./utils.js");
+var  utils = require("./utils.js"),
+     memory = require("./memory.js");
 
 module.exports = {
-
-  _records: null,
 
   save: function() {
     if ( !this.id ) {
       this.id = UUIDjs.create().toString();
     }
 
-    var attrs = this.attributes();
-    this._records[this.id] = attrs;
+    var attrs = this.attributes(),
+        records = memory.get(this.klass._storageKey);
+
+    records[attrs.id] = attrs;
+
     return this;
   },
 
   destroy: function() {
-    delete this._records[this.id];
+    var records = memory.get(this.klass._storageKey);
+    delete records[this.id];
   },
 
   attributes: function() {
@@ -34,10 +37,7 @@ module.exports = {
   },
 
   isAttribute: function(key) {
-    var isRecords = ( key === "_records" ),
-        isFunction = utils.is("Function", this[key]);
-
-    return !isRecords && !isFunction;
+    return !utils.is("Function", this[key]) && key !== "klass";
   }
 
 };

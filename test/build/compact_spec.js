@@ -9386,16 +9386,15 @@ utils.extend(compact, store);
 module.exports = compact;
 
 
-},{"./core.js":17,"./finder.js":18,"./store.js":20,"./utils.js":21,"./writer.js":22}],17:[function(require,module,exports){
-var instance = require('./instance.js'), utils = require('./utils.js');
+},{"./core.js":17,"./finder.js":18,"./store.js":21,"./utils.js":22,"./writer.js":23}],17:[function(require,module,exports){
+var instance = require('./instance.js'), utils = require('./utils.js'), memory = require('./memory.js');
 module.exports = {
-    _records: {},
     _storageKey: null,
     _createInit: function (instanceMethods) {
-        var _records = this._records;
+        var klass = this;
         var fn = function (attributes) {
             var inst = Object.create(instance);
-            inst._records = _records;
+            inst.klass = klass;
             utils.extend(inst, attributes);
             if (instanceMethods) {
                 utils.extend(inst, instanceMethods);
@@ -9408,26 +9407,30 @@ module.exports = {
         if (!storageKey) {
             throw 'storageKey should not be null, undefined';
         }
+        memory.init(storageKey);
         var model = Object.create(this);
         model._storageKey = storageKey;
-        model.init = this._createInit(instanceMethods);
+        model.init = model._createInit(instanceMethods);
         return model;
     }
 };
 
 
-},{"./instance.js":19,"./utils.js":21}],18:[function(require,module,exports){
+},{"./instance.js":19,"./memory.js":20,"./utils.js":22}],18:[function(require,module,exports){
+var memory = require('./memory.js');
 module.exports = {
     all: function () {
         var instances = [], id, inst;
-        for (id in this._records) {
-            inst = this.init(this._records[id]);
+        var records = memory.get(this._storageKey);
+        for (id in records) {
+            inst = this.init(records[id]);
             instances.push(inst);
         }
         return instances;
     },
     find: function (id) {
-        var attrs = this._records[id];
+        var records = memory.get(this._storageKey);
+        var attrs = records[id];
         if (!attrs) {
             return null;
         }
@@ -9436,20 +9439,20 @@ module.exports = {
 };
 
 
-},{}],19:[function(require,module,exports){
-var utils = require('./utils.js');
+},{"./memory.js":20}],19:[function(require,module,exports){
+var utils = require('./utils.js'), memory = require('./memory.js');
 module.exports = {
-    _records: null,
     save: function () {
         if (!this.id) {
             this.id = UUIDjs.create().toString();
         }
-        var attrs = this.attributes();
-        this._records[this.id] = attrs;
+        var attrs = this.attributes(), records = memory.get(this.klass._storageKey);
+        records[attrs.id] = attrs;
         return this;
     },
     destroy: function () {
-        delete this._records[this.id];
+        var records = memory.get(this.klass._storageKey);
+        delete records[this.id];
     },
     attributes: function () {
         var attrs = {}, key;
@@ -9461,26 +9464,46 @@ module.exports = {
         return attrs;
     },
     isAttribute: function (key) {
-        var isRecords = key === '_records', isFunction = utils.is('Function', this[key]);
-        return !isRecords && !isFunction;
+        return !utils.is('Function', this[key]) && key !== 'klass';
     }
 };
 
 
-},{"./utils.js":21}],20:[function(require,module,exports){
+},{"./memory.js":20,"./utils.js":22}],20:[function(require,module,exports){
+var _storage = {};
 module.exports = {
-    saveDb: function (callback) {
-        var key = this._storageKey, item = JSON.stringify(this._records);
-        localforage.setItem(key, item, callback);
+    get: function (key) {
+        return _storage[key];
     },
-    loadDb: function (callback) {
-        var key = this._storageKey;
-        localforage.getItem(key, callback);
+    set: function (key, obj) {
+        _storage[key] = obj;
+    },
+    init: function (key) {
+        this.set(key, {});
     }
 };
 
 
 },{}],21:[function(require,module,exports){
+var memory = require('./memory.js');
+module.exports = {
+    saveDb: function (callback) {
+        var key = this._storageKey, records = memory.get(this._storageKey), item = JSON.stringify(records);
+        localforage.setItem(key, item, callback);
+    },
+    loadDb: function (callback) {
+        var key = this._storageKey;
+        localforage.getItem(key, function (json) {
+            memory.set(key, JSON.parse(json));
+            if (callback) {
+                callback();
+            }
+        });
+    }
+};
+
+
+},{"./memory.js":20}],22:[function(require,module,exports){
 module.exports = {
     extend: function (to, from) {
         var key;
@@ -9495,7 +9518,8 @@ module.exports = {
 };
 
 
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
+var memory = require('./memory.js');
 module.exports = {
     save: function (values) {
         var i = 0, val;
@@ -9504,17 +9528,18 @@ module.exports = {
             if (!val.id) {
                 return false;
             }
-            this._records[val.id] = val;
+            var records = memory.get(this._storageKey);
+            records[val.id] = val;
         }
         return true;
     },
     destroy: function () {
-        this._records = {};
+        memory.init(this._storageKey);
     }
 };
 
 
-},{}],23:[function(require,module,exports){
+},{"./memory.js":20}],24:[function(require,module,exports){
 var assert = require('power-assert'), compact = require('../../src/compact.js');
 describe('core', function () {
     describe('compact.extend', function () {
@@ -9620,7 +9645,7 @@ describe('core', function () {
 });
 
 
-},{"../../src/compact.js":16,"../../src/instance.js":19,"power-assert":6}],24:[function(require,module,exports){
+},{"../../src/compact.js":16,"../../src/instance.js":19,"power-assert":6}],25:[function(require,module,exports){
 var assert = require('power-assert'), compact = require('../../src/compact.js'), utils = require('../../src/utils.js');
 describe('finder', function () {
     before(function () {
@@ -9669,7 +9694,7 @@ describe('finder', function () {
 });
 
 
-},{"../../src/compact.js":16,"../../src/utils.js":21,"power-assert":6}],25:[function(require,module,exports){
+},{"../../src/compact.js":16,"../../src/utils.js":22,"power-assert":6}],26:[function(require,module,exports){
 var assert = require('power-assert'), compact = require('../../src/compact.js');
 describe('instance', function () {
     before(function () {
@@ -9681,18 +9706,11 @@ describe('instance', function () {
         this.user.save();
     });
     describe('compact#save', function () {
-        it('_records has instance\'s attributes', function () {
-            assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/object/object')._records, 'arguments/0/left/object/object')[assert._capt(assert._capt(this.user, 'arguments/0/left/object/property/object').id, 'arguments/0/left/object/property')], 'arguments/0/left/object').name, 'arguments/0/left') === assert._capt(assert._capt(this.user, 'arguments/0/right/object').name, 'arguments/0/right'), 'arguments/0'), {
-                content: 'assert(this.user._records[this.user.id].name === this.user.name)',
+        it('records has instance\'s attributes', function () {
+            assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/callee/object').find(assert._capt(this.testUserId, 'arguments/0/left/object/arguments/0')), 'arguments/0/left/object').name, 'arguments/0/left') === assert._capt(assert._capt(this.user, 'arguments/0/right/object').name, 'arguments/0/right'), 'arguments/0'), {
+                content: 'assert(this.User.find(this.testUserId).name === this.user.name)',
                 filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
                 line: 18
-            }));
-        });
-        it('link to parent object\'s _records property', function () {
-            assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/object')._records, 'arguments/0/left/object')[assert._capt(assert._capt(this.user, 'arguments/0/left/property/object').id, 'arguments/0/left/property')], 'arguments/0/left') && assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/right/object/object')._records, 'arguments/0/right/object')[assert._capt(assert._capt(this.user, 'arguments/0/right/property/object').id, 'arguments/0/right/property')], 'arguments/0/right'), 'arguments/0'), {
-                content: 'assert(this.user._records[this.user.id] && this.User._records[this.user.id])',
-                filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
-                line: 22
             }));
         });
         context('instance does not have id', function () {
@@ -9703,7 +9721,7 @@ describe('instance', function () {
                 assert(assert._expr(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/object/callee/object').save(), 'arguments/0/object').id, 'arguments/0'), {
                     content: 'assert(this.user.save().id)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
-                    line: 32
+                    line: 28
                 }));
             });
         });
@@ -9717,7 +9735,7 @@ describe('instance', function () {
                 assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/callee/object').save(), 'arguments/0/left/object').id, 'arguments/0/left') === assert._capt(this.userId, 'arguments/0/right'), 'arguments/0'), {
                     content: 'assert(this.user.save().id === this.userId)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
-                    line: 46
+                    line: 42
                 }));
             });
         });
@@ -9727,11 +9745,11 @@ describe('instance', function () {
             var user = this.User.find(this.testUserId);
             user.destroy();
         });
-        it('delete _records property', function () {
-            assert(assert._expr(assert._capt(!assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/argument/object/object')._records, 'arguments/0/argument/object')[assert._capt(this.testUserId, 'arguments/0/argument/property')], 'arguments/0/argument'), 'arguments/0'), {
-                content: 'assert(!this.User._records[this.testUserId])',
+        it('delete records property', function () {
+            assert(assert._expr(assert._capt(!assert._capt(assert._capt(this.User, 'arguments/0/argument/callee/object').find(assert._capt(this.testUserId, 'arguments/0/argument/arguments/0')), 'arguments/0/argument'), 'arguments/0'), {
+                content: 'assert(!this.User.find(this.testUserId))',
                 filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
-                line: 61
+                line: 57
             }));
         });
     });
@@ -9747,14 +9765,14 @@ describe('instance', function () {
             assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(Object, 'arguments/0/left/left/left/object/callee/object').keys(assert._capt(attrs, 'arguments/0/left/left/left/object/arguments/0')), 'arguments/0/left/left/left/object').length, 'arguments/0/left/left/left') === 2, 'arguments/0/left/left') && assert._capt(assert._capt(attrs, 'arguments/0/left/right/callee/object').hasOwnProperty('id'), 'arguments/0/left/right'), 'arguments/0/left') && assert._capt(assert._capt(attrs, 'arguments/0/right/callee/object').hasOwnProperty('name'), 'arguments/0/right'), 'arguments/0'), {
                 content: 'assert(Object.keys(attrs).length === 2 && attrs.hasOwnProperty(\'id\') && attrs.hasOwnProperty(\'name\'))',
                 filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
-                line: 77
+                line: 73
             }));
         });
     });
 });
 
 
-},{"../../src/compact.js":16,"power-assert":6}],26:[function(require,module,exports){
+},{"../../src/compact.js":16,"power-assert":6}],27:[function(require,module,exports){
 var assert = require('power-assert'), compact = require('../../src/compact.js');
 describe('writer', function () {
     before(function () {
@@ -9776,12 +9794,11 @@ describe('writer', function () {
                     line: 20
                 }));
             });
-            it('link to instance object\'s _records property', function () {
-                var user = this.User.find(this.testUserId);
-                assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/object')._records, 'arguments/0/left/object')[assert._capt(this.testUserId, 'arguments/0/left/property')], 'arguments/0/left') && assert._capt(assert._capt(assert._capt(user, 'arguments/0/right/object/object')._records, 'arguments/0/right/object')[assert._capt(this.testUserId, 'arguments/0/right/property')], 'arguments/0/right'), 'arguments/0'), {
-                    content: 'assert(this.User._records[this.testUserId] && user._records[this.testUserId])',
+            it('records has data', function () {
+                assert(assert._expr(assert._capt(assert._capt(this.User, 'arguments/0/callee/object').find(assert._capt(this.testUserId, 'arguments/0/arguments/0')), 'arguments/0'), {
+                    content: 'assert(this.User.find(this.testUserId))',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/writer_spec.js',
-                    line: 25
+                    line: 24
                 }));
             });
         });
@@ -9793,7 +9810,7 @@ describe('writer', function () {
                 assert(assert._expr(assert._capt(!assert._capt(assert._capt(this.User, 'arguments/0/argument/callee/object').save(assert._capt(this.userData, 'arguments/0/argument/arguments/0')), 'arguments/0/argument'), 'arguments/0'), {
                     content: 'assert(!this.User.save(this.userData))',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/writer_spec.js',
-                    line: 37
+                    line: 36
                 }));
             });
         });
@@ -9802,15 +9819,15 @@ describe('writer', function () {
         before(function () {
             this.User.destroy();
         });
-        it('_records is empty object', function () {
-            assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(Object, 'arguments/0/left/object/callee/object').keys(assert._capt(assert._capt(this.User, 'arguments/0/left/object/arguments/0/object')._records, 'arguments/0/left/object/arguments/0')), 'arguments/0/left/object').length, 'arguments/0/left') === 0, 'arguments/0'), {
-                content: 'assert(Object.keys(this.User._records).length === 0)',
+        it('records is empty object', function () {
+            assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/callee/object').all(), 'arguments/0/left/object').length, 'arguments/0/left') === 0, 'arguments/0'), {
+                content: 'assert(this.User.all().length === 0)',
                 filepath: '/Users/shinyatakahashi/working/compact/test/src/writer_spec.js',
-                line: 50
+                line: 49
             }));
         });
     });
 });
 
 
-},{"../../src/compact.js":16,"power-assert":6}]},{},[23,24,25,26])
+},{"../../src/compact.js":16,"power-assert":6}]},{},[24,25,26,27])

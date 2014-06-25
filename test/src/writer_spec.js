@@ -20,9 +20,8 @@ describe('writer', function(){
         assert(this.User.save(this.userData));
       });
 
-      it("link to instance object's _records property", function(){
-        var user = this.User.find(this.testUserId);
-        assert(this.User._records[this.testUserId] && user._records[this.testUserId]);
+      it("records has data", function(){
+        assert(this.User.find(this.testUserId));
       });
 
     });
@@ -46,8 +45,8 @@ describe('writer', function(){
       this.User.destroy();
     });
 
-    it("_records is empty object", function(){
-      assert(Object.keys(this.User._records).length === 0);
+    it("records is empty object", function(){
+      assert(this.User.all().length === 0);
     });
   });
 

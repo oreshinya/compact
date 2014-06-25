@@ -14,12 +14,8 @@ describe('instance', function(){
 
   describe("compact#save", function(){
 
-    it("_records has instance's attributes", function(){
-      assert(this.user._records[this.user.id].name === this.user.name);
-    });
-
-    it("link to parent object's _records property", function(){
-      assert(this.user._records[this.user.id] && this.User._records[this.user.id]);
+    it("records has instance's attributes", function(){
+      assert(this.User.find(this.testUserId).name === this.user.name);
     });
 
     context('instance does not have id', function(){
@@ -57,8 +53,8 @@ describe('instance', function(){
       user.destroy();
     });
 
-    it("delete _records property", function(){
-      assert(!this.User._records[this.testUserId]);
+    it("delete records property", function(){
+      assert(!this.User.find(this.testUserId));
     });
 
   });
