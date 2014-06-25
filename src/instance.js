@@ -1,11 +1,15 @@
-var  utils = require("./utils.js");
+var  utils = require("./utils.js"),
+     uuid = require("uuid-js");
 
 module.exports = {
 
   _records: null,
 
   save: function() {
-    if ( this.id )
+    if ( !this.id ) {
+      this.id = uuid.create().toString();
+    }
+
     var attrs = this.attributes();
     this._records[this.id] = attrs;
   },
@@ -33,7 +37,7 @@ module.exports = {
     var isRecords = ( key === "_records" ),
         isFunction = utils.is("Function", this[key]);
 
-    return !isId && !isRecords && !isFunction;
+    return !isRecords && !isFunction;
   }
 
 };

@@ -19,6 +19,7 @@
     "uglifyify": "^2.4.0"
   },
   "dependencies": {
-    "localforage": "^0.8.1"
+    "localforage": "^0.8.1",
+    "uuid-js": "^0.7.4"
   }
 }
