@@ -1,0 +1,26 @@
+{
+  "name": "compact",
+  "version": "0.0.1",
+  "homepage": "https://github.com/oreshinya/compact",
+  "authors": [
+    "shinya takahashi <s.takahashi313@gmail.com>"
+  ],
+  "description": "model and storage wrapper",
+  "main": "build/compact.min.js",
+  "keywords": [
+    "model",
+    "storage"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "localforage": "~0.8.1",
+    "uuid-js": "~0.7.5"
+  }
+}

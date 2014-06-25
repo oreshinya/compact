@@ -1,5 +1,4 @@
-var  utils = require("./utils.js"),
-     uuid = require("uuid-js");
+var  utils = require("./utils.js");
 
 module.exports = {
 
@@ -7,7 +6,7 @@ module.exports = {
 
   save: function() {
     if ( !this.id ) {
-      this.id = uuid.create().toString();
+      this.id = UUID.create().toString();
     }
 
     var attrs = this.attributes();

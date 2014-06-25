@@ -1,5 +1,3 @@
-var localforage = require("localforage");
-
 module.exports = {
 
   saveDb: function(callback) {

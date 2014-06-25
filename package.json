@@ -3,23 +3,28 @@
   "version": "0.0.1",
   "description": "model and storage wrapper",
   "main": "build/compact.min.js",
-  "scripts": {
-    "test": "grunt test"
-  },
-  "keywords": [
-    "model",
-    "storage"
-  ],
-  "author": "shinya takahashi",
-  "license": "MIT",
-  "devDependencies": {
+  "dependencies": {
     "browserify": "^4.1.11",
     "grunt": "^0.4.5",
     "grunt-browserify": "^2.1.0",
     "uglifyify": "^2.4.0"
   },
-  "dependencies": {
-    "localforage": "^0.8.1",
-    "uuid-js": "^0.7.4"
-  }
+  "devDependencies": {},
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oreshinya/compact.git"
+  },
+  "keywords": [
+    "model",
+    "storage"
+  ],
+  "author": "shinya takahashi <s.takahashi313@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/oreshinya/compact/issues"
+  },
+  "homepage": "https://github.com/oreshinya/compact"
 }
