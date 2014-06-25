@@ -9622,26 +9622,25 @@ describe('compact', function () {
     describe('instance', function () {
         before(function () {
             this.User = compact.extend('user');
+            this.testUserId = 200;
+            this.user = this.User.init();
+            this.user.id = this.testUserId;
+            this.user.name = 'Mike';
+            this.user.save();
         });
         describe('compact#save', function () {
-            before(function () {
-                this.user = this.User.init();
-                this.user.id = 200;
-                this.user.name = 'Mike';
-                this.user.save();
-            });
             it('_records has instance\'s attributes', function () {
                 assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/object/object')._records, 'arguments/0/left/object/object')[assert._capt(assert._capt(this.user, 'arguments/0/left/object/property/object').id, 'arguments/0/left/object/property')], 'arguments/0/left/object').name, 'arguments/0/left') === assert._capt(assert._capt(this.user, 'arguments/0/right/object').name, 'arguments/0/right'), 'arguments/0'), {
                     content: 'assert(this.user._records[this.user.id].name === this.user.name)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                    line: 123
+                    line: 121
                 }));
             });
             it('link to parent object\'s _records property', function () {
-                assert(assert._expr(assert._capt(assert._capt(!assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/argument/object/object')._records, 'arguments/0/left/argument/object')[assert._capt(assert._capt(this.user, 'arguments/0/left/argument/property/object').id, 'arguments/0/left/argument/property')], 'arguments/0/left/argument'), 'arguments/0/left') && assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/right/object/object')._records, 'arguments/0/right/object')[assert._capt(assert._capt(this.user, 'arguments/0/right/property/object').id, 'arguments/0/right/property')], 'arguments/0/right'), 'arguments/0'), {
-                    content: 'assert(!this.user._records[this.user.id] && this.User._records[this.user.id])',
+                assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/object')._records, 'arguments/0/left/object')[assert._capt(assert._capt(this.user, 'arguments/0/left/property/object').id, 'arguments/0/left/property')], 'arguments/0/left') && assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/right/object/object')._records, 'arguments/0/right/object')[assert._capt(assert._capt(this.user, 'arguments/0/right/property/object').id, 'arguments/0/right/property')], 'arguments/0/right'), 'arguments/0'), {
+                    content: 'assert(this.user._records[this.user.id] && this.User._records[this.user.id])',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                    line: 128
+                    line: 125
                 }));
             });
             context('instance does not have id', function () {
@@ -9652,7 +9651,7 @@ describe('compact', function () {
                     assert(assert._expr(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/object/callee/object').save(), 'arguments/0/object').id, 'arguments/0'), {
                         content: 'assert(this.user.save().id)',
                         filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                        line: 138
+                        line: 135
                     }));
                 });
             });
@@ -9666,24 +9665,94 @@ describe('compact', function () {
                     assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/callee/object').save(), 'arguments/0/left/object').id, 'arguments/0/left') === assert._capt(this.userId, 'arguments/0/right'), 'arguments/0'), {
                         content: 'assert(this.user.save().id === this.userId)',
                         filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
-                        line: 152
+                        line: 149
                     }));
                 });
             });
         });
         describe('compact#destroy', function () {
+            before(function () {
+                var user = this.User.find(this.testUserId);
+                user.destroy();
+            });
+            it('delete _records property', function () {
+                assert(assert._expr(assert._capt(!assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/argument/object/object')._records, 'arguments/0/argument/object')[assert._capt(this.testUserId, 'arguments/0/argument/property')], 'arguments/0/argument'), 'arguments/0'), {
+                    content: 'assert(!this.User._records[this.testUserId])',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                    line: 164
+                }));
+            });
         });
         describe('compact#attributes', function () {
-        });
-        describe('compact#isAttribute', function () {
+            before(function () {
+                this.user = this.User.init();
+                this.user.id = this.testUserId;
+                this.user.name = 'Mike';
+                this.user.save();
+            });
+            it('returned object has only \'name\' property', function () {
+                var attrs = this.user.attributes();
+                assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(Object, 'arguments/0/left/left/left/object/callee/object').keys(assert._capt(attrs, 'arguments/0/left/left/left/object/arguments/0')), 'arguments/0/left/left/left/object').length, 'arguments/0/left/left/left') === 2, 'arguments/0/left/left') && assert._capt(assert._capt(attrs, 'arguments/0/left/right/callee/object').hasOwnProperty('id'), 'arguments/0/left/right'), 'arguments/0/left') && assert._capt(assert._capt(attrs, 'arguments/0/right/callee/object').hasOwnProperty('name'), 'arguments/0/right'), 'arguments/0'), {
+                    content: 'assert(Object.keys(attrs).length === 2 && attrs.hasOwnProperty(\'id\') && attrs.hasOwnProperty(\'name\'))',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                    line: 180
+                }));
+            });
         });
     });
     describe('writer', function () {
+        before(function () {
+            this.User = compact.extend('user');
+        });
         describe('compact.save', function () {
-            it('link to instance object\'s _records property', function () {
+            context('data has id', function () {
+                before(function () {
+                    this.testUserId = 100;
+                    this.userData = [{
+                            id: this.testUserId,
+                            name: 'Ken'
+                        }];
+                });
+                it('return true', function () {
+                    assert(assert._expr(assert._capt(assert._capt(this.User, 'arguments/0/callee/object').save(assert._capt(this.userData, 'arguments/0/arguments/0')), 'arguments/0'), {
+                        content: 'assert(this.User.save(this.userData))',
+                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                        line: 203
+                    }));
+                });
+                it('link to instance object\'s _records property', function () {
+                    var user = this.User.find(this.testUserId);
+                    assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/object')._records, 'arguments/0/left/object')[assert._capt(this.testUserId, 'arguments/0/left/property')], 'arguments/0/left') && assert._capt(assert._capt(assert._capt(user, 'arguments/0/right/object/object')._records, 'arguments/0/right/object')[assert._capt(this.testUserId, 'arguments/0/right/property')], 'arguments/0/right'), 'arguments/0'), {
+                        content: 'assert(this.User._records[this.testUserId] && user._records[this.testUserId])',
+                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                        line: 208
+                    }));
+                });
+            });
+            context('data does not have id', function () {
+                before(function () {
+                    this.userData = [{ name: 'Go' }];
+                });
+                it('return false', function () {
+                    assert(assert._expr(assert._capt(!assert._capt(assert._capt(this.User, 'arguments/0/argument/callee/object').save(assert._capt(this.userData, 'arguments/0/argument/arguments/0')), 'arguments/0/argument'), 'arguments/0'), {
+                        content: 'assert(!this.User.save(this.userData))',
+                        filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                        line: 220
+                    }));
+                });
             });
         });
         describe('compact.destroy', function () {
+            before(function () {
+                this.User.destroy();
+            });
+            it('_records is empty object', function () {
+                assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(Object, 'arguments/0/left/object/callee/object').keys(assert._capt(assert._capt(this.User, 'arguments/0/left/object/arguments/0/object')._records, 'arguments/0/left/object/arguments/0')), 'arguments/0/left/object').length, 'arguments/0/left') === 0, 'arguments/0'), {
+                    content: 'assert(Object.keys(this.User._records).length === 0)',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/compact_spec.js',
+                    line: 233
+                }));
+            });
         });
     });
     describe('finder', function () {

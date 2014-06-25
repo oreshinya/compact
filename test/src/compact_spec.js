@@ -108,16 +108,14 @@ describe('compact', function(){
 
     before(function(){
       this.User = compact.extend('user');
+      this.testUserId = 200;
+      this.user = this.User.init();
+      this.user.id = this.testUserId;
+      this.user.name = "Mike";
+      this.user.save();
     });
 
     describe("compact#save", function(){
-
-      before(function(){
-        this.user = this.User.init();
-        this.user.id = 200;
-        this.user.name = "Mike";
-        this.user.save();
-      });
 
       it("_records has instance's attributes", function(){
         assert(this.user._records[this.user.id].name === this.user.name);
@@ -156,27 +154,84 @@ describe('compact', function(){
     });
 
     describe("compact#destroy", function(){
+
+      before(function(){
+        var user = this.User.find(this.testUserId);
+        user.destroy();
+      });
+
+      it("delete _records property", function(){
+        assert(!this.User._records[this.testUserId]);
+      });
+
     });
 
     describe("compact#attributes", function(){
-    });
 
-    describe("compact#isAttribute", function(){
+      before(function(){
+        this.user = this.User.init();
+        this.user.id = this.testUserId;
+        this.user.name = "Mike";
+        this.user.save();
+      });
+
+      it("returned object has only 'name' property", function(){
+        var attrs = this.user.attributes();
+        assert(Object.keys(attrs).length === 2 && attrs.hasOwnProperty('id') && attrs.hasOwnProperty('name'));
+      });
+
     });
 
   });
 
   describe('writer', function(){
 
+    before(function(){
+      this.User = compact.extend('user');
+    });
+
     describe('compact.save', function(){
 
-      //_recordsはinstanceとclassのでリンクしていることを確認
-      it("link to instance object's _records property", function(){
+      context("data has id", function(){
+
+        before(function(){
+          this.testUserId = 100;
+          this.userData = [{id: this.testUserId, name: "Ken"}];
+        });
+
+        it("return true", function(){
+          assert(this.User.save(this.userData));
+        });
+
+        it("link to instance object's _records property", function(){
+          var user = this.User.find(this.testUserId);
+          assert(this.User._records[this.testUserId] && user._records[this.testUserId]);
+        });
+
+      });
+
+      context('data does not have id', function(){
+
+        before(function(){
+          this.userData = [{name: "Go"}];
+        });
+
+        it("return false", function(){
+          assert(!this.User.save(this.userData));
+        });
+
       });
 
     });
 
     describe('compact.destroy', function(){
+      before(function(){
+        this.User.destroy();
+      });
+
+      it("_records is empty object", function(){
+        assert(Object.keys(this.User._records).length === 0);
+      });
     });
 
   });
