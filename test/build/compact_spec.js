@@ -9383,7 +9383,11 @@ utils.extend(compact, core);
 utils.extend(compact, finder);
 utils.extend(compact, writer);
 utils.extend(compact, store);
-module.exports = compact;
+if (typeof module !== 'undefined') {
+    module.exports = compact;
+} else {
+    window.compact = compact;
+}
 
 
 },{"./core.js":17,"./finder.js":18,"./store.js":21,"./utils.js":22,"./writer.js":23}],17:[function(require,module,exports){
