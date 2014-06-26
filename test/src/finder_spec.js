@@ -2,6 +2,13 @@ var assert = require("power-assert"),
     compact = require("../../src/compact.js"),
     utils = require("../../src/utils.js");
 
+var initUser = function(context) {
+  context.user = context.User.init();
+  context.user.id = 1;
+  context.user.name = "Mike";
+  context.user.save();
+};
+
 describe('finder', function(){
 
   before(function(){
@@ -28,10 +35,7 @@ describe('finder', function(){
     context("record is not empty", function(){
 
       before(function(){
-        this.user = this.User.init();
-        this.user.id = 1;
-        this.user.name = "Mike";
-        this.user.save();
+        initUser(this);
       });
 
       it("returned Array has object", function(){
@@ -45,9 +49,23 @@ describe('finder', function(){
   describe('compact.find', function(){
 
     context("record is not found", function(){
+      before(function(){
+        this.User.destroy();
+      });
+
+      it("return null", function(){
+        assert(this.User.find(1) === null);
+      });
     });
 
     context("record is found", function(){
+      before(function(){
+        initUser(this);
+      });
+
+      it("return object", function(){
+        assert(utils.is("Object", this.User.find(1)));
+      });
     });
 
   });

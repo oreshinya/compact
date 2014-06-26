@@ -9670,6 +9670,12 @@ describe('core', function () {
 
 },{"../../src/compact.js":16,"../../src/instance.js":19,"power-assert":6}],25:[function(require,module,exports){
 var assert = require('power-assert'), compact = require('../../src/compact.js'), utils = require('../../src/utils.js');
+var initUser = function (context) {
+    context.user = context.User.init();
+    context.user.id = 1;
+    context.user.name = 'Mike';
+    context.user.save();
+};
 describe('finder', function () {
     before(function () {
         this.User = compact.extend({ key: 'user' });
@@ -9680,7 +9686,7 @@ describe('finder', function () {
             assert(assert._expr(assert._capt(assert._capt(utils, 'arguments/0/callee/object').is('Array', assert._capt(assert._capt(this.User, 'arguments/0/arguments/1/callee/object').all(), 'arguments/0/arguments/1')), 'arguments/0'), {
                 content: 'assert(utils.is("Array", this.User.all()))',
                 filepath: '/Users/shinyatakahashi/working/compact/test/src/finder_spec.js',
-                line: 17
+                line: 24
             }));
         });
         context('record is empty', function () {
@@ -9688,30 +9694,47 @@ describe('finder', function () {
                 assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/callee/object').all(), 'arguments/0/left/object').length, 'arguments/0/left') === 0, 'arguments/0'), {
                     content: 'assert(this.User.all().length === 0)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/finder_spec.js',
-                    line: 23
+                    line: 30
                 }));
             });
         });
         context('record is not empty', function () {
             before(function () {
-                this.user = this.User.init();
-                this.user.id = 1;
-                this.user.name = 'Mike';
-                this.user.save();
+                initUser(this);
             });
             it('returned Array has object', function () {
                 assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/callee/object').all(), 'arguments/0/left/object').length, 'arguments/0/left') > 0, 'arguments/0'), {
                     content: 'assert(this.User.all().length > 0)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/finder_spec.js',
-                    line: 38
+                    line: 42
                 }));
             });
         });
     });
     describe('compact.find', function () {
         context('record is not found', function () {
+            before(function () {
+                this.User.destroy();
+            });
+            it('return null', function () {
+                assert(assert._expr(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/callee/object').find(1), 'arguments/0/left') === null, 'arguments/0'), {
+                    content: 'assert(this.User.find(1) === null)',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/finder_spec.js',
+                    line: 57
+                }));
+            });
         });
         context('record is found', function () {
+            before(function () {
+                initUser(this);
+            });
+            it('return object', function () {
+                assert(assert._expr(assert._capt(assert._capt(utils, 'arguments/0/callee/object').is('Object', assert._capt(assert._capt(this.User, 'arguments/0/arguments/1/callee/object').find(1), 'arguments/0/arguments/1')), 'arguments/0'), {
+                    content: 'assert(utils.is("Object", this.User.find(1)))',
+                    filepath: '/Users/shinyatakahashi/working/compact/test/src/finder_spec.js',
+                    line: 67
+                }));
+            });
         });
     });
 });
