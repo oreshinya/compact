@@ -1,6 +1,12 @@
 #Compact.js
 compact.js is storage API wrapper with localforage.
 
+#Install
+```
+bower install compact
+```
+depends on localforage.
+
 #Usage
 ```
 var Cat = compact.extend({
