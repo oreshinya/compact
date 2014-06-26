@@ -2,7 +2,7 @@
   "name": "compact",
   "version": "0.0.1",
   "description": "model and storage wrapper",
-  "main": "build/compact.min.js",
+  "main": "src/compact.js",
   "dependencies": {},
   "devDependencies": {
     "browserify": "^4.1.11",

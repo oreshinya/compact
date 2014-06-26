@@ -11,8 +11,4 @@ utils.extend(compact, finder);
 utils.extend(compact, writer);
 utils.extend(compact, store);
 
-if ( typeof module !== 'undefined' ) {
-  module.exports = compact;
-} else {
-  window.compact = compact;
-}
+module.exports = compact;
