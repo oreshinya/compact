@@ -5,7 +5,9 @@ var assert = require("power-assert"),
 describe('finder', function(){
 
   before(function(){
-    this.User = compact.extend('user');
+    this.User = compact.extend({
+      key: 'user'
+    });
     this.User.destroy();
   });
 

@@ -8,18 +8,19 @@ module.exports = {
 
   _instanceBase: instance,
 
-  extend: function(storageKey, instanceMethods) {
-    if ( !storageKey ) {
-      throw("storageKey should not be null, undefined");
+  extend: function(options) {
+    var opts = options || {};
+    if ( !opts.key ) {
+      throw("key should not be null, undefined");
     }
 
-    memory.init(storageKey);
+    memory.init(opts.key);
 
     var model = Object.create(this);
-    model._storageKey = storageKey;
+    model._storageKey = opts.key;
     model._instanceBase = Object.create(this._instanceBase);
-    if ( instanceMethods ) {
-      utils.extend(model._instanceBase, instanceMethods);
+    if ( opts.methods ) {
+      utils.extend(model._instanceBase, opts.methods);
     }
 
     return model;

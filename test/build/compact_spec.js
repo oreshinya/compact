@@ -9391,16 +9391,17 @@ var instance = require('./instance.js'), utils = require('./utils.js'), memory =
 module.exports = {
     _storageKey: null,
     _instanceBase: instance,
-    extend: function (storageKey, instanceMethods) {
-        if (!storageKey) {
-            throw 'storageKey should not be null, undefined';
+    extend: function (options) {
+        var opts = options || {};
+        if (!opts.key) {
+            throw 'key should not be null, undefined';
         }
-        memory.init(storageKey);
+        memory.init(opts.key);
         var model = Object.create(this);
-        model._storageKey = storageKey;
+        model._storageKey = opts.key;
         model._instanceBase = Object.create(this._instanceBase);
-        if (instanceMethods) {
-            utils.extend(model._instanceBase, instanceMethods);
+        if (opts.methods) {
+            utils.extend(model._instanceBase, opts.methods);
         }
         return model;
     },
@@ -9548,7 +9549,7 @@ describe('core', function () {
         });
         context('receive storageKey', function () {
             before(function () {
-                this.User = compact.extend('user');
+                this.User = compact.extend({ key: 'user' });
                 this.ownedCount = 0;
                 this.defaultPropertyCount = 0;
                 var key;
@@ -9597,7 +9598,7 @@ describe('core', function () {
     });
     describe('compact.init', function () {
         before(function () {
-            var User = compact.extend('user'), key;
+            var User = compact.extend({ key: 'user' }), key;
             this.ownedCount = 0;
             this.defaultPropertyCount = 0;
             this.user = User.init();
@@ -9618,8 +9619,11 @@ describe('core', function () {
         });
         context('if receive instanceMethods when extended', function () {
             before(function () {
-                this.User = compact.extend('user', {
-                    sample: function () {
+                this.User = compact.extend({
+                    key: 'user',
+                    methods: {
+                        sample: function () {
+                        }
                     }
                 });
                 this.user = this.User.init();
@@ -9628,22 +9632,25 @@ describe('core', function () {
                 assert(assert._expr(assert._capt(assert._capt(this.user, 'arguments/0/object').sample, 'arguments/0'), {
                     content: 'assert(this.user.sample)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
-                    line: 92
+                    line: 95
                 }));
             });
             it('compact default instance does not have added instanceMethods', function () {
                 assert(assert._expr(assert._capt(!assert._capt(assert._capt(this.instance, 'arguments/0/argument/object').sample, 'arguments/0/argument'), 'arguments/0'), {
                     content: 'assert(!this.instance.sample)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
-                    line: 96
+                    line: 99
                 }));
             });
             context('multiple inheritance', function () {
                 before(function () {
                     this.User.testMethod = function () {
                     };
-                    this.Royal = this.User.extend('royal', {
-                        walk: function () {
+                    this.Royal = this.User.extend({
+                        key: 'royal',
+                        methods: {
+                            walk: function () {
+                            }
                         }
                     });
                     this.royal = this.Royal.init();
@@ -9652,7 +9659,7 @@ describe('core', function () {
                     assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.Royal, 'arguments/0/left/left/object').testMethod, 'arguments/0/left/left') && assert._capt(assert._capt(this.royal, 'arguments/0/left/right/object').walk, 'arguments/0/left/right'), 'arguments/0/left') && assert._capt(assert._capt(this.royal, 'arguments/0/right/object').sample, 'arguments/0/right'), 'arguments/0'), {
                         content: 'assert(this.Royal.testMethod && this.royal.walk && this.royal.sample)',
                         filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
-                        line: 110
+                        line: 116
                     }));
                 });
             });
@@ -9665,7 +9672,7 @@ describe('core', function () {
 var assert = require('power-assert'), compact = require('../../src/compact.js'), utils = require('../../src/utils.js');
 describe('finder', function () {
     before(function () {
-        this.User = compact.extend('user');
+        this.User = compact.extend({ key: 'user' });
         this.User.destroy();
     });
     describe('compact.all', function () {
@@ -9673,7 +9680,7 @@ describe('finder', function () {
             assert(assert._expr(assert._capt(assert._capt(utils, 'arguments/0/callee/object').is('Array', assert._capt(assert._capt(this.User, 'arguments/0/arguments/1/callee/object').all(), 'arguments/0/arguments/1')), 'arguments/0'), {
                 content: 'assert(utils.is("Array", this.User.all()))',
                 filepath: '/Users/shinyatakahashi/working/compact/test/src/finder_spec.js',
-                line: 15
+                line: 17
             }));
         });
         context('record is empty', function () {
@@ -9681,7 +9688,7 @@ describe('finder', function () {
                 assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/callee/object').all(), 'arguments/0/left/object').length, 'arguments/0/left') === 0, 'arguments/0'), {
                     content: 'assert(this.User.all().length === 0)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/finder_spec.js',
-                    line: 21
+                    line: 23
                 }));
             });
         });
@@ -9696,7 +9703,7 @@ describe('finder', function () {
                 assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/callee/object').all(), 'arguments/0/left/object').length, 'arguments/0/left') > 0, 'arguments/0'), {
                     content: 'assert(this.User.all().length > 0)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/finder_spec.js',
-                    line: 36
+                    line: 38
                 }));
             });
         });
@@ -9714,7 +9721,7 @@ describe('finder', function () {
 var assert = require('power-assert'), compact = require('../../src/compact.js');
 describe('instance', function () {
     before(function () {
-        this.User = compact.extend('user');
+        this.User = compact.extend({ key: 'user' });
         this.testUserId = 200;
         this.user = this.User.init();
         this.user.id = this.testUserId;
@@ -9726,7 +9733,7 @@ describe('instance', function () {
             assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/callee/object').find(assert._capt(this.testUserId, 'arguments/0/left/object/arguments/0')), 'arguments/0/left/object').name, 'arguments/0/left') === assert._capt(assert._capt(this.user, 'arguments/0/right/object').name, 'arguments/0/right'), 'arguments/0'), {
                 content: 'assert(this.User.find(this.testUserId).name === this.user.name)',
                 filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
-                line: 18
+                line: 20
             }));
         });
         context('instance does not have id', function () {
@@ -9737,7 +9744,7 @@ describe('instance', function () {
                 assert(assert._expr(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/object/callee/object').save(), 'arguments/0/object').id, 'arguments/0'), {
                     content: 'assert(this.user.save().id)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
-                    line: 28
+                    line: 30
                 }));
             });
         });
@@ -9751,7 +9758,7 @@ describe('instance', function () {
                 assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.user, 'arguments/0/left/object/callee/object').save(), 'arguments/0/left/object').id, 'arguments/0/left') === assert._capt(this.userId, 'arguments/0/right'), 'arguments/0'), {
                     content: 'assert(this.user.save().id === this.userId)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
-                    line: 42
+                    line: 44
                 }));
             });
         });
@@ -9765,7 +9772,7 @@ describe('instance', function () {
             assert(assert._expr(assert._capt(!assert._capt(assert._capt(this.User, 'arguments/0/argument/callee/object').find(assert._capt(this.testUserId, 'arguments/0/argument/arguments/0')), 'arguments/0/argument'), 'arguments/0'), {
                 content: 'assert(!this.User.find(this.testUserId))',
                 filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
-                line: 57
+                line: 59
             }));
         });
     });
@@ -9781,7 +9788,7 @@ describe('instance', function () {
             assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(assert._capt(Object, 'arguments/0/left/left/left/object/callee/object').keys(assert._capt(attrs, 'arguments/0/left/left/left/object/arguments/0')), 'arguments/0/left/left/left/object').length, 'arguments/0/left/left/left') === 2, 'arguments/0/left/left') && assert._capt(assert._capt(attrs, 'arguments/0/left/right/callee/object').hasOwnProperty('id'), 'arguments/0/left/right'), 'arguments/0/left') && assert._capt(assert._capt(attrs, 'arguments/0/right/callee/object').hasOwnProperty('name'), 'arguments/0/right'), 'arguments/0'), {
                 content: 'assert(Object.keys(attrs).length === 2 && attrs.hasOwnProperty(\'id\') && attrs.hasOwnProperty(\'name\'))',
                 filepath: '/Users/shinyatakahashi/working/compact/test/src/instance_spec.js',
-                line: 73
+                line: 75
             }));
         });
     });
@@ -9792,7 +9799,7 @@ describe('instance', function () {
 var assert = require('power-assert'), compact = require('../../src/compact.js');
 describe('writer', function () {
     before(function () {
-        this.User = compact.extend('user');
+        this.User = compact.extend({ key: 'user' });
     });
     describe('compact.save', function () {
         context('data has id', function () {
@@ -9807,14 +9814,14 @@ describe('writer', function () {
                 assert(assert._expr(assert._capt(assert._capt(this.User, 'arguments/0/callee/object').save(assert._capt(this.userData, 'arguments/0/arguments/0')), 'arguments/0'), {
                     content: 'assert(this.User.save(this.userData))',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/writer_spec.js',
-                    line: 20
+                    line: 22
                 }));
             });
             it('records has data', function () {
                 assert(assert._expr(assert._capt(assert._capt(this.User, 'arguments/0/callee/object').find(assert._capt(this.testUserId, 'arguments/0/arguments/0')), 'arguments/0'), {
                     content: 'assert(this.User.find(this.testUserId))',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/writer_spec.js',
-                    line: 24
+                    line: 26
                 }));
             });
         });
@@ -9826,7 +9833,7 @@ describe('writer', function () {
                 assert(assert._expr(assert._capt(!assert._capt(assert._capt(this.User, 'arguments/0/argument/callee/object').save(assert._capt(this.userData, 'arguments/0/argument/arguments/0')), 'arguments/0/argument'), 'arguments/0'), {
                     content: 'assert(!this.User.save(this.userData))',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/writer_spec.js',
-                    line: 36
+                    line: 38
                 }));
             });
         });
@@ -9839,7 +9846,7 @@ describe('writer', function () {
             assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/callee/object').all(), 'arguments/0/left/object').length, 'arguments/0/left') === 0, 'arguments/0'), {
                 content: 'assert(this.User.all().length === 0)',
                 filepath: '/Users/shinyatakahashi/working/compact/test/src/writer_spec.js',
-                line: 49
+                line: 51
             }));
         });
     });

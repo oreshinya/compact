@@ -14,7 +14,7 @@ describe('core', function(){
     context('receive storageKey', function(){
 
       before(function(){
-        this.User = compact.extend('user');
+        this.User = compact.extend({key: 'user'});
         this.ownedCount = 0;
         this.defaultPropertyCount = 0;
 
@@ -58,7 +58,7 @@ describe('core', function(){
   describe('compact.init', function(){
 
     before(function(){
-      var User = compact.extend('user'),
+      var User = compact.extend({key: 'user'}),
           key;
 
       this.ownedCount = 0;
@@ -82,8 +82,11 @@ describe('core', function(){
     context('if receive instanceMethods when extended', function(){
 
       before(function(){
-        this.User = compact.extend('user', {
-          sample: function() {}
+        this.User = compact.extend({
+          key: 'user',
+          methods: {
+            sample: function() {}
+          }
         });
         this.user = this.User.init();
       });
@@ -100,8 +103,11 @@ describe('core', function(){
 
         before(function(){
           this.User.testMethod = function() {};
-          this.Royal = this.User.extend('royal', {
-            walk: function() {}
+          this.Royal = this.User.extend({
+            key: 'royal',
+            methods: {
+              walk: function() {}
+            }
           });
           this.royal = this.Royal.init();
         });

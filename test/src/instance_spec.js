@@ -4,7 +4,9 @@ var assert = require("power-assert"),
 describe('instance', function(){
 
   before(function(){
-    this.User = compact.extend('user');
+    this.User = compact.extend({
+      key: 'user' 
+    });
     this.testUserId = 200;
     this.user = this.User.init();
     this.user.id = this.testUserId;
