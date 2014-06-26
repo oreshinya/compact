@@ -3,6 +3,8 @@ var  utils = require("./utils.js"),
 
 module.exports = {
 
+  klass: null,
+
   save: function() {
     if ( !this.id ) {
       this.id = UUIDjs.create().toString();

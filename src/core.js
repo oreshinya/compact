@@ -6,22 +6,7 @@ module.exports = {
 
   _storageKey: null,
 
-  _createInit: function(instanceMethods) {
-    var klass = this;
-    var fn = function(attributes) {
-      var inst = Object.create(instance);
-      inst.klass = klass;
-
-      utils.extend(inst, attributes);
-      if ( instanceMethods ) {
-        utils.extend(inst, instanceMethods);
-      }
-
-      return inst;
-    };
-
-    return fn;
-  },
+  _instanceBase: instance,
 
   extend: function(storageKey, instanceMethods) {
     if ( !storageKey ) {
@@ -29,10 +14,23 @@ module.exports = {
     }
 
     memory.init(storageKey);
+
     var model = Object.create(this);
     model._storageKey = storageKey;
-    model.init = model._createInit(instanceMethods);
+    model._instanceBase = Object.create(this._instanceBase);
+    if ( instanceMethods ) {
+      utils.extend(model._instanceBase, instanceMethods);
+    }
+
     return model;
+  },
+
+  init: function(attributes) {
+    var inst = Object.create(this._instanceBase);
+    inst.klass = this;
+
+    utils.extend(inst, attributes);
+    return inst;
   }
 
 };

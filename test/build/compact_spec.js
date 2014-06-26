@@ -9390,19 +9390,7 @@ module.exports = compact;
 var instance = require('./instance.js'), utils = require('./utils.js'), memory = require('./memory.js');
 module.exports = {
     _storageKey: null,
-    _createInit: function (instanceMethods) {
-        var klass = this;
-        var fn = function (attributes) {
-            var inst = Object.create(instance);
-            inst.klass = klass;
-            utils.extend(inst, attributes);
-            if (instanceMethods) {
-                utils.extend(inst, instanceMethods);
-            }
-            return inst;
-        };
-        return fn;
-    },
+    _instanceBase: instance,
     extend: function (storageKey, instanceMethods) {
         if (!storageKey) {
             throw 'storageKey should not be null, undefined';
@@ -9410,8 +9398,17 @@ module.exports = {
         memory.init(storageKey);
         var model = Object.create(this);
         model._storageKey = storageKey;
-        model.init = model._createInit(instanceMethods);
+        model._instanceBase = Object.create(this._instanceBase);
+        if (instanceMethods) {
+            utils.extend(model._instanceBase, instanceMethods);
+        }
         return model;
+    },
+    init: function (attributes) {
+        var inst = Object.create(this._instanceBase);
+        inst.klass = this;
+        utils.extend(inst, attributes);
+        return inst;
     }
 };
 
@@ -9442,6 +9439,7 @@ module.exports = {
 },{"./memory.js":20}],19:[function(require,module,exports){
 var utils = require('./utils.js'), memory = require('./memory.js');
 module.exports = {
+    klass: null,
     save: function () {
         if (!this.id) {
             this.id = UUIDjs.create().toString();
@@ -9569,8 +9567,8 @@ describe('core', function () {
                 }));
             });
             it('returned object has init method', function () {
-                assert(assert._expr(assert._capt(assert._capt(this.User, 'arguments/0/callee/object').hasOwnProperty('init'), 'arguments/0'), {
-                    content: 'assert(this.User.hasOwnProperty("init"))',
+                assert(assert._expr(assert._capt(assert._capt(this.User, 'arguments/0/object').init, 'arguments/0'), {
+                    content: 'assert(this.User.init)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
                     line: 35
                 }));
@@ -9620,25 +9618,43 @@ describe('core', function () {
         });
         context('if receive instanceMethods when extended', function () {
             before(function () {
-                var User = compact.extend('user', {
-                        sample: function () {
-                        }
-                    });
-                this.user = User.init();
+                this.User = compact.extend('user', {
+                    sample: function () {
+                    }
+                });
+                this.user = this.User.init();
             });
             it('returned instance has \'instanceMethods\'', function () {
-                assert(assert._expr(assert._capt(assert._capt(this.user, 'arguments/0/callee/object').hasOwnProperty('sample'), 'arguments/0'), {
-                    content: 'assert(this.user.hasOwnProperty(\'sample\'))',
+                assert(assert._expr(assert._capt(assert._capt(this.user, 'arguments/0/object').sample, 'arguments/0'), {
+                    content: 'assert(this.user.sample)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
                     line: 92
                 }));
             });
             it('compact default instance does not have added instanceMethods', function () {
-                assert(assert._expr(assert._capt(!assert._capt(assert._capt(this.instance, 'arguments/0/argument/callee/object').hasOwnProperty('sample'), 'arguments/0/argument'), 'arguments/0'), {
-                    content: 'assert(!this.instance.hasOwnProperty(\'sample\'))',
+                assert(assert._expr(assert._capt(!assert._capt(assert._capt(this.instance, 'arguments/0/argument/object').sample, 'arguments/0/argument'), 'arguments/0'), {
+                    content: 'assert(!this.instance.sample)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
                     line: 96
                 }));
+            });
+            context('multiple inheritance', function () {
+                before(function () {
+                    this.User.testMethod = function () {
+                    };
+                    this.Royal = this.User.extend('royal', {
+                        walk: function () {
+                        }
+                    });
+                    this.royal = this.Royal.init();
+                });
+                it('inherit parent', function () {
+                    assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.Royal, 'arguments/0/left/left/object').testMethod, 'arguments/0/left/left') && assert._capt(assert._capt(this.royal, 'arguments/0/left/right/object').walk, 'arguments/0/left/right'), 'arguments/0/left') && assert._capt(assert._capt(this.royal, 'arguments/0/right/object').sample, 'arguments/0/right'), 'arguments/0'), {
+                        content: 'assert(this.Royal.testMethod && this.royal.walk && this.royal.sample)',
+                        filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
+                        line: 110
+                    }));
+                });
             });
         });
     });

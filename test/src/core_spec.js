@@ -32,7 +32,7 @@ describe('core', function(){
       });
 
       it("returned object has init method", function(){
-        assert(this.User.hasOwnProperty("init"));
+        assert(this.User.init);
       });
 
       it("returned object has _storageKey: 'user'", function(){
@@ -82,18 +82,34 @@ describe('core', function(){
     context('if receive instanceMethods when extended', function(){
 
       before(function(){
-        var User = compact.extend('user', {
+        this.User = compact.extend('user', {
           sample: function() {}
         });
-        this.user = User.init();
+        this.user = this.User.init();
       });
 
       it("returned instance has 'instanceMethods'", function(){
-        assert(this.user.hasOwnProperty('sample'));
+        assert(this.user.sample);
       });
 
       it("compact default instance does not have added instanceMethods", function(){
-        assert(!this.instance.hasOwnProperty('sample'));
+        assert(!this.instance.sample);
+      });
+
+      context('multiple inheritance', function(){
+
+        before(function(){
+          this.User.testMethod = function() {};
+          this.Royal = this.User.extend('royal', {
+            walk: function() {}
+          });
+          this.royal = this.Royal.init();
+        });
+
+        it('inherit parent', function(){
+          assert(this.Royal.testMethod && this.royal.walk && this.royal.sample);
+        });
+
       });
 
     });
