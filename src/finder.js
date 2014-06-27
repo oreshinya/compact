@@ -3,11 +3,10 @@ var memory = require("./memory.js");
 module.exports = {
 
   all: function() {
-    var instances = [],
+    var records = memory.get(this._storageKey),
+        instances = [],
         id,
         inst;
-
-    var records = memory.get(this._storageKey);
 
     for ( id in records ) {
       inst = this.init(records[id]);
@@ -18,9 +17,8 @@ module.exports = {
   },
 
   find: function(id) {
-    var records = memory.get(this._storageKey);
-
-    var attrs = records[id];
+    var records = memory.get(this._storageKey),
+        attrs = records[id];
 
     if ( !attrs ) {
       return null;

@@ -3,7 +3,9 @@ var memory = require("./memory.js");
 module.exports = {
 
   save: function(values) {
-    var i = 0, val;
+    var records = memory.get(this._storageKey),
+        i = 0,
+        val;
 
     for ( ; i < values.length; i++ ) {
       val = values[i];
@@ -12,7 +14,6 @@ module.exports = {
         return false;
       }
 
-      var records = memory.get(this._storageKey);
       records[val.id] = val;
     }
 

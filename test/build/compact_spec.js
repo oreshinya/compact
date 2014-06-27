@@ -9377,8 +9377,7 @@ this['DIFF_INSERT'] = DIFF_INSERT;
 this['DIFF_EQUAL'] = DIFF_EQUAL;
 
 },{}],16:[function(require,module,exports){
-var compact = {};
-var utils = require('./utils.js'), core = require('./core.js'), finder = require('./finder.js'), writer = require('./writer.js'), store = require('./store.js');
+var compact = {}, utils = require('./utils.js'), core = require('./core.js'), finder = require('./finder.js'), writer = require('./writer.js'), store = require('./store.js');
 utils.extend(compact, core);
 utils.extend(compact, finder);
 utils.extend(compact, writer);
@@ -9392,12 +9391,12 @@ module.exports = {
     _storageKey: null,
     _instanceBase: instance,
     extend: function (options) {
-        var opts = options || {};
+        var opts = options || {}, model;
         if (!opts.key) {
             throw 'key should not be null, undefined';
         }
         memory.init(opts.key);
-        var model = Object.create(this);
+        model = Object.create(this);
         model._storageKey = opts.key;
         model._instanceBase = Object.create(this._instanceBase);
         if (opts.methods) {
@@ -9418,8 +9417,7 @@ module.exports = {
 var memory = require('./memory.js');
 module.exports = {
     all: function () {
-        var instances = [], id, inst;
-        var records = memory.get(this._storageKey);
+        var records = memory.get(this._storageKey), instances = [], id, inst;
         for (id in records) {
             inst = this.init(records[id]);
             instances.push(inst);
@@ -9427,8 +9425,7 @@ module.exports = {
         return instances;
     },
     find: function (id) {
-        var records = memory.get(this._storageKey);
-        var attrs = records[id];
+        var records = memory.get(this._storageKey), attrs = records[id];
         if (!attrs) {
             return null;
         }
@@ -9521,13 +9518,12 @@ module.exports = {
 var memory = require('./memory.js');
 module.exports = {
     save: function (values) {
-        var i = 0, val;
+        var records = memory.get(this._storageKey), i = 0, val;
         for (; i < values.length; i++) {
             val = values[i];
             if (!val.id) {
                 return false;
             }
-            var records = memory.get(this._storageKey);
             records[val.id] = val;
         }
         return true;

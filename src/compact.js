@@ -1,6 +1,5 @@
-var compact = {};
-
-var utils = require("./utils.js"),
+var compact = {},
+    utils = require("./utils.js"),
     core = require("./core.js"),
     finder = require("./finder.js"),
     writer = require("./writer.js"),
