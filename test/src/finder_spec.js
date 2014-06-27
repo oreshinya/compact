@@ -1,5 +1,5 @@
 var assert = require("power-assert"),
-    compact = require("../../src/compact.js"),
+    Compact = require("../../src/compact.js"),
     utils = require("../../src/utils.js");
 
 var initUser = function(context) {
@@ -12,13 +12,13 @@ var initUser = function(context) {
 describe('finder', function(){
 
   before(function(){
-    this.User = compact.extend({
+    this.User = Compact.extend({
       key: 'user'
     });
     this.User.destroy();
   });
 
-  describe('compact.all', function(){
+  describe('Compact.all', function(){
 
     it("return Array", function(){
       assert(utils.is("Array", this.User.all()));
@@ -46,7 +46,7 @@ describe('finder', function(){
 
   });
 
-  describe('compact.find', function(){
+  describe('Compact.find', function(){
 
     context("record is not found", function(){
       before(function(){

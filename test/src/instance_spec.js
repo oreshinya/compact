@@ -1,10 +1,10 @@
 var assert = require("power-assert"),
-    compact = require("../../src/compact.js");
+    Compact = require("../../src/compact.js");
 
 describe('instance', function(){
 
   before(function(){
-    this.User = compact.extend({
+    this.User = Compact.extend({
       key: 'user' 
     });
     this.testUserId = 200;
@@ -14,7 +14,7 @@ describe('instance', function(){
     this.user.save();
   });
 
-  describe("compact#save", function(){
+  describe("Compact#save", function(){
 
     it("records has instance's attributes", function(){
       assert(this.User.find(this.testUserId).name === this.user.name);
@@ -48,7 +48,7 @@ describe('instance', function(){
 
   });
 
-  describe("compact#destroy", function(){
+  describe("Compact#destroy", function(){
 
     before(function(){
       var user = this.User.find(this.testUserId);
@@ -61,7 +61,7 @@ describe('instance', function(){
 
   });
 
-  describe("compact#attributes", function(){
+  describe("Compact#attributes", function(){
 
     before(function(){
       this.user = this.User.init();

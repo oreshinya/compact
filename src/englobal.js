@@ -1,1 +1,1 @@
-window.compact = require('./compact.js');
+window.Compact = require('./compact.js');

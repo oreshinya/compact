@@ -9377,12 +9377,12 @@ this['DIFF_INSERT'] = DIFF_INSERT;
 this['DIFF_EQUAL'] = DIFF_EQUAL;
 
 },{}],16:[function(require,module,exports){
-var compact = {}, utils = require('./utils.js'), core = require('./core.js'), finder = require('./finder.js'), writer = require('./writer.js'), store = require('./store.js');
-utils.extend(compact, core);
-utils.extend(compact, finder);
-utils.extend(compact, writer);
-utils.extend(compact, store);
-module.exports = compact;
+var Compact = {}, utils = require('./utils.js'), core = require('./core.js'), finder = require('./finder.js'), writer = require('./writer.js'), store = require('./store.js');
+utils.extend(Compact, core);
+utils.extend(Compact, finder);
+utils.extend(Compact, writer);
+utils.extend(Compact, store);
+module.exports = Compact;
 
 
 },{"./core.js":17,"./finder.js":18,"./store.js":21,"./utils.js":22,"./writer.js":23}],17:[function(require,module,exports){
@@ -9535,28 +9535,28 @@ module.exports = {
 
 
 },{"./memory.js":20}],24:[function(require,module,exports){
-var assert = require('power-assert'), compact = require('../../src/compact.js');
+var assert = require('power-assert'), Compact = require('../../src/compact.js');
 describe('core', function () {
-    describe('compact.extend', function () {
+    describe('Compact.extend', function () {
         context('does not receive storageKey', function () {
             it('occur Error', function () {
-                assert.throws(compact.extend);
+                assert.throws(Compact.extend);
             });
         });
         context('receive storageKey', function () {
             before(function () {
-                this.User = compact.extend({ key: 'user' });
+                this.User = Compact.extend({ key: 'user' });
                 this.ownedCount = 0;
                 this.defaultPropertyCount = 0;
                 var key;
-                for (key in compact) {
+                for (key in Compact) {
                     this.defaultPropertyCount++;
                     if (this.User[key]) {
                         this.ownedCount++;
                     }
                 }
             });
-            it('returned object has compact\'s properties', function () {
+            it('returned object has Compact\'s properties', function () {
                 assert(assert._expr(assert._capt(assert._capt(this.ownedCount, 'arguments/0/left') === assert._capt(this.defaultPropertyCount, 'arguments/0/right'), 'arguments/0'), {
                     content: 'assert(this.ownedCount === this.defaultPropertyCount)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
@@ -9582,9 +9582,9 @@ describe('core', function () {
                     this.User.sample = function () {
                     };
                 });
-                it('compact does not have added method at extended model', function () {
-                    assert(assert._expr(assert._capt(!assert._capt(assert._capt(compact, 'arguments/0/argument/object').sample, 'arguments/0/argument'), 'arguments/0'), {
-                        content: 'assert(!compact.sample)',
+                it('Compact does not have added method at extended model', function () {
+                    assert(assert._expr(assert._capt(!assert._capt(assert._capt(Compact, 'arguments/0/argument/object').sample, 'arguments/0/argument'), 'arguments/0'), {
+                        content: 'assert(!Compact.sample)',
                         filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
                         line: 49
                     }));
@@ -9592,9 +9592,9 @@ describe('core', function () {
             });
         });
     });
-    describe('compact.init', function () {
+    describe('Compact.init', function () {
         before(function () {
-            var User = compact.extend({ key: 'user' }), key;
+            var User = Compact.extend({ key: 'user' }), key;
             this.ownedCount = 0;
             this.defaultPropertyCount = 0;
             this.user = User.init();
@@ -9615,7 +9615,7 @@ describe('core', function () {
         });
         context('if receive instanceMethods when extended', function () {
             before(function () {
-                this.User = compact.extend({
+                this.User = Compact.extend({
                     key: 'user',
                     methods: {
                         sample: function () {
@@ -9631,7 +9631,7 @@ describe('core', function () {
                     line: 95
                 }));
             });
-            it('compact default instance does not have added instanceMethods', function () {
+            it('Compact default instance does not have added instanceMethods', function () {
                 assert(assert._expr(assert._capt(!assert._capt(assert._capt(this.instance, 'arguments/0/argument/object').sample, 'arguments/0/argument'), 'arguments/0'), {
                     content: 'assert(!this.instance.sample)',
                     filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
@@ -9665,7 +9665,7 @@ describe('core', function () {
 
 
 },{"../../src/compact.js":16,"../../src/instance.js":19,"power-assert":6}],25:[function(require,module,exports){
-var assert = require('power-assert'), compact = require('../../src/compact.js'), utils = require('../../src/utils.js');
+var assert = require('power-assert'), Compact = require('../../src/compact.js'), utils = require('../../src/utils.js');
 var initUser = function (context) {
     context.user = context.User.init();
     context.user.id = 1;
@@ -9674,10 +9674,10 @@ var initUser = function (context) {
 };
 describe('finder', function () {
     before(function () {
-        this.User = compact.extend({ key: 'user' });
+        this.User = Compact.extend({ key: 'user' });
         this.User.destroy();
     });
-    describe('compact.all', function () {
+    describe('Compact.all', function () {
         it('return Array', function () {
             assert(assert._expr(assert._capt(assert._capt(utils, 'arguments/0/callee/object').is('Array', assert._capt(assert._capt(this.User, 'arguments/0/arguments/1/callee/object').all(), 'arguments/0/arguments/1')), 'arguments/0'), {
                 content: 'assert(utils.is("Array", this.User.all()))',
@@ -9707,7 +9707,7 @@ describe('finder', function () {
             });
         });
     });
-    describe('compact.find', function () {
+    describe('Compact.find', function () {
         context('record is not found', function () {
             before(function () {
                 this.User.destroy();
@@ -9737,17 +9737,17 @@ describe('finder', function () {
 
 
 },{"../../src/compact.js":16,"../../src/utils.js":22,"power-assert":6}],26:[function(require,module,exports){
-var assert = require('power-assert'), compact = require('../../src/compact.js');
+var assert = require('power-assert'), Compact = require('../../src/compact.js');
 describe('instance', function () {
     before(function () {
-        this.User = compact.extend({ key: 'user' });
+        this.User = Compact.extend({ key: 'user' });
         this.testUserId = 200;
         this.user = this.User.init();
         this.user.id = this.testUserId;
         this.user.name = 'Mike';
         this.user.save();
     });
-    describe('compact#save', function () {
+    describe('Compact#save', function () {
         it('records has instance\'s attributes', function () {
             assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.User, 'arguments/0/left/object/callee/object').find(assert._capt(this.testUserId, 'arguments/0/left/object/arguments/0')), 'arguments/0/left/object').name, 'arguments/0/left') === assert._capt(assert._capt(this.user, 'arguments/0/right/object').name, 'arguments/0/right'), 'arguments/0'), {
                 content: 'assert(this.User.find(this.testUserId).name === this.user.name)',
@@ -9782,7 +9782,7 @@ describe('instance', function () {
             });
         });
     });
-    describe('compact#destroy', function () {
+    describe('Compact#destroy', function () {
         before(function () {
             var user = this.User.find(this.testUserId);
             user.destroy();
@@ -9795,7 +9795,7 @@ describe('instance', function () {
             }));
         });
     });
-    describe('compact#attributes', function () {
+    describe('Compact#attributes', function () {
         before(function () {
             this.user = this.User.init();
             this.user.id = this.testUserId;
@@ -9815,12 +9815,12 @@ describe('instance', function () {
 
 
 },{"../../src/compact.js":16,"power-assert":6}],27:[function(require,module,exports){
-var assert = require('power-assert'), compact = require('../../src/compact.js');
+var assert = require('power-assert'), Compact = require('../../src/compact.js');
 describe('writer', function () {
     before(function () {
-        this.User = compact.extend({ key: 'user' });
+        this.User = Compact.extend({ key: 'user' });
     });
-    describe('compact.save', function () {
+    describe('Compact.save', function () {
         context('data has id', function () {
             before(function () {
                 this.testUserId = 100;
@@ -9857,7 +9857,7 @@ describe('writer', function () {
             });
         });
     });
-    describe('compact.destroy', function () {
+    describe('Compact.destroy', function () {
         before(function () {
             this.User.destroy();
         });

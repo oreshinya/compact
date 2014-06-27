@@ -1,13 +1,13 @@
-var compact = {},
+var Compact = {},
     utils = require("./utils.js"),
     core = require("./core.js"),
     finder = require("./finder.js"),
     writer = require("./writer.js"),
     store = require("./store.js");
 
-utils.extend(compact, core);
-utils.extend(compact, finder);
-utils.extend(compact, writer);
-utils.extend(compact, store);
+utils.extend(Compact, core);
+utils.extend(Compact, finder);
+utils.extend(Compact, writer);
+utils.extend(Compact, store);
 
-module.exports = compact;
+module.exports = Compact;

@@ -1,15 +1,15 @@
 var assert = require("power-assert"),
-    compact = require("../../src/compact.js");
+    Compact = require("../../src/compact.js");
 
 describe('writer', function(){
 
   before(function(){
-    this.User = compact.extend({
+    this.User = Compact.extend({
       key: 'user'
     });
   });
 
-  describe('compact.save', function(){
+  describe('Compact.save', function(){
 
     context("data has id", function(){
 
@@ -42,7 +42,7 @@ describe('writer', function(){
 
   });
 
-  describe('compact.destroy', function(){
+  describe('Compact.destroy', function(){
     before(function(){
       this.User.destroy();
     });

@@ -1,25 +1,25 @@
 var assert = require("power-assert"),
-    compact = require("../../src/compact.js");
+    Compact = require("../../src/compact.js");
 
 describe('core', function(){
 
-  describe('compact.extend', function(){
+  describe('Compact.extend', function(){
 
     context('does not receive storageKey', function(){
       it("occur Error", function(){
-        assert.throws(compact.extend);
+        assert.throws(Compact.extend);
       });
     });
 
     context('receive storageKey', function(){
 
       before(function(){
-        this.User = compact.extend({key: 'user'});
+        this.User = Compact.extend({key: 'user'});
         this.ownedCount = 0;
         this.defaultPropertyCount = 0;
 
         var key;
-        for ( key in compact ) {
+        for ( key in Compact ) {
           this.defaultPropertyCount++;
           if ( this.User[key] ) {
             this.ownedCount++;
@@ -27,7 +27,7 @@ describe('core', function(){
         }
       });
 
-      it("returned object has compact's properties", function(){
+      it("returned object has Compact's properties", function(){
         assert(this.ownedCount === this.defaultPropertyCount);
       });
 
@@ -45,8 +45,8 @@ describe('core', function(){
           this.User.sample = function(){};
         });
 
-        it("compact does not have added method at extended model", function(){
-          assert(!compact.sample);
+        it("Compact does not have added method at extended model", function(){
+          assert(!Compact.sample);
         });
 
       });
@@ -55,10 +55,10 @@ describe('core', function(){
 
   });
 
-  describe('compact.init', function(){
+  describe('Compact.init', function(){
 
     before(function(){
-      var User = compact.extend({key: 'user'}),
+      var User = Compact.extend({key: 'user'}),
           key;
 
       this.ownedCount = 0;
@@ -82,7 +82,7 @@ describe('core', function(){
     context('if receive instanceMethods when extended', function(){
 
       before(function(){
-        this.User = compact.extend({
+        this.User = Compact.extend({
           key: 'user',
           methods: {
             sample: function() {}
@@ -95,7 +95,7 @@ describe('core', function(){
         assert(this.user.sample);
       });
 
-      it("compact default instance does not have added instanceMethods", function(){
+      it("Compact default instance does not have added instanceMethods", function(){
         assert(!this.instance.sample);
       });
 

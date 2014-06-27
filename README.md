@@ -9,7 +9,7 @@ depends on localforage.
 
 #Usage
 ```
-var Cat = compact.extend({
+var Cat = Compact.extend({
   key: 'cat',
   methods: {
     talk: function() {
