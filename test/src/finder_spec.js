@@ -2,32 +2,30 @@ var assert = require("power-assert"),
     Compact = require("../../src/compact.js"),
     utils = require("../../src/utils.js");
 
-var initUser = function(context) {
-  context.user = context.User.init();
-  context.user.id = 1;
-  context.user.name = "Mike";
-  context.user.save();
+var initRobot = function(context) {
+  context.robot = context.Robot.init();
+  context.robot.id = 1;
+  context.robot.name = "Mike";
+  context.robot.save();
 };
 
 describe('finder', function(){
 
   before(function(){
-    this.User = Compact.extend({
-      key: 'user'
-    });
-    this.User.destroy();
+    this.Robot = Compact.extend({key: 'robot'});
+    this.Robot.destroy();
   });
 
   describe('Compact.all', function(){
 
     it("return Array", function(){
-      assert(utils.is("Array", this.User.all()));
+      assert(utils.is("Array", this.Robot.all()));
     });
 
     context("record is empty", function(){
 
       it("returned empty Array", function(){
-        assert(this.User.all().length === 0);
+        assert(this.Robot.all().length === 0);
       });
 
     });
@@ -35,11 +33,11 @@ describe('finder', function(){
     context("record is not empty", function(){
 
       before(function(){
-        initUser(this);
+        initRobot(this);
       });
 
       it("returned Array has object", function(){
-        assert(this.User.all().length > 0);
+        assert(this.Robot.all().length > 0);
       });
 
     });
@@ -50,21 +48,21 @@ describe('finder', function(){
 
     context("record is not found", function(){
       before(function(){
-        this.User.destroy();
+        this.Robot.destroy();
       });
 
       it("return null", function(){
-        assert(this.User.find(1) === null);
+        assert(this.Robot.find(1) === null);
       });
     });
 
     context("record is found", function(){
       before(function(){
-        initUser(this);
+        initRobot(this);
       });
 
       it("return object", function(){
-        assert(utils.is("Object", this.User.find(1)));
+        assert(utils.is("Object", this.Robot.find(1)));
       });
     });
 

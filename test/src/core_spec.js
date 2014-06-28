@@ -4,49 +4,92 @@ var assert = require("power-assert"),
 describe('core', function(){
 
   describe('Compact.extend', function(){
-
-    context('does not receive storageKey', function(){
+    context("does not receive 'options' or 'options.key'", function(){
       it("occur Error", function(){
         assert.throws(Compact.extend);
       });
     });
 
-    context('receive storageKey', function(){
+    context("receive 'options.key'", function(){
 
       before(function(){
-        this.User = Compact.extend({key: 'user'});
-        this.ownedCount = 0;
-        this.defaultPropertyCount = 0;
-
-        var key;
-        for ( key in Compact ) {
-          this.defaultPropertyCount++;
-          if ( this.User[key] ) {
-            this.ownedCount++;
+        var that = this;
+        that.key = 'user';
+        that.User = Compact.extend({
+          key: that.key,
+          methods: {
+            additionalMethod: function(){}
           }
-        }
+        });
+        that.User.fat = function(){};
       });
 
-      it("returned object has Compact's properties", function(){
-        assert(this.ownedCount === this.defaultPropertyCount);
+      it("return object that has '_storageKey' set 'options.key'", function(){
+        assert(this.User._storageKey === this.key);
       });
 
-      it("returned object has init method", function(){
+      it("return object that has '_instanceBase'", function(){
+        assert(this.User._instanceBase);
+      });
+
+      it("return object that has 'extend'", function(){
+        assert(this.User.extend);
+      });
+
+      it("return object that has 'init'", function(){
         assert(this.User.init);
       });
 
-      it("returned object has _storageKey: 'user'", function(){
-        assert(this.User._storageKey === 'user');
+      it("return object that has 'all'", function(){
+        assert(this.User.all);
       });
 
-      context('when add methods to extended model', function(){
+      it("return object that has 'find'", function(){
+        assert(this.User.find);
+      });
+
+      it("return object that has 'save'", function(){
+        assert(this.User.save);
+      });
+
+      it("return object that has 'destroy'", function(){
+        assert(this.User.destroy);
+      });
+
+      it("return object that has 'saveDb'", function(){
+        assert(this.User.saveDb);
+      });
+
+      it("return object that has 'loadDb'", function(){
+        assert(this.User.loadDb);
+      });
+
+      it("return object that's _instanceBase has 'options.methods.additionalMethod'", function(){
+        assert(this.User._instanceBase.additionalMethod);
+      });
+
+      it("does not add 'options.methods.additionalMethod' to Compacts's _instanceBase", function(){
+        assert(!Compact._instanceBase.additionalMethod);
+      });
+
+      it("does not add custom method extending object", function() {
+        assert(!Compact.fat);
+      });
+
+      context("multiple inheritance", function(){
 
         before(function(){
-          this.User.sample = function(){};
+          this.Police = this.User.extend({
+            key: 'police'
+          });
         });
 
-        it("Compact does not have added method at extended model", function(){
-          assert(!Compact.sample);
+        it("return object that's _instanceBase has 'options.methods.additionalMethod'", function(){
+          assert(this.Police._instanceBase.additionalMethod);
+        });
+
+        it("return object has extending object's method", function() {
+          assert(this.Police.fat);
         });
 
       });
@@ -58,66 +101,37 @@ describe('core', function(){
   describe('Compact.init', function(){
 
     before(function(){
-      var User = Compact.extend({key: 'user'}),
-          key;
-
-      this.ownedCount = 0;
-      this.defaultPropertyCount = 0;
-      this.user = User.init();
-      this.instance = require("../../src/instance.js");
-
-      for ( key in this.instance ) {
-        this.defaultPropertyCount++;
-        if ( this.user[key] ) {
-          this.ownedCount++;
+      this.Animal = Compact.extend({
+        key: 'animal',
+        methods: {
+          additionalMethod: function(){}
         }
-      }
-
+      });
+      this.animal = this.Animal.init();
     });
 
-    it('returned object has instance properties', function(){
-      assert(this.defaultPropertyCount === this.ownedCount);
+    it("return object that has 'klass'", function(){
+      assert(this.animal.klass.key === this.Animal.key);
+    })
+
+    it("return object that has 'save'", function(){
+      assert(this.animal.save);
     });
 
-    context('if receive instanceMethods when extended', function(){
+    it("return object that has 'destroy'", function(){
+      assert(this.animal.destroy);
+    });
 
-      before(function(){
-        this.User = Compact.extend({
-          key: 'user',
-          methods: {
-            sample: function() {}
-          }
-        });
-        this.user = this.User.init();
-      });
+    it("return object that has 'attributes'", function(){
+      assert(this.animal.attributes);
+    });
 
-      it("returned instance has 'instanceMethods'", function(){
-        assert(this.user.sample);
-      });
+    it("return object that has 'isAttribute'", function(){
+      assert(this.animal.isAttribute);
+    });
 
-      it("Compact default instance does not have added instanceMethods", function(){
-        assert(!this.instance.sample);
-      });
-
-      context('multiple inheritance', function(){
-
-        before(function(){
-          this.User.testMethod = function() {};
-          this.Royal = this.User.extend({
-            key: 'royal',
-            methods: {
-              walk: function() {}
-            }
-          });
-          this.royal = this.Royal.init();
-        });
-
-        it('inherit parent', function(){
-          assert(this.Royal.testMethod && this.royal.walk && this.royal.sample);
-        });
-
-      });
-
+    it("return object that has _instanceBases's additionalMethod'", function(){
+      assert(this.animal.additionalMethod === this.Animal._instanceBase.additionalMethod);
     });
 
   });
