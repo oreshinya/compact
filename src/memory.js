@@ -10,8 +10,16 @@ module.exports = {
     _storage[key] = obj;
   },
 
-  init: function(key) {
+  drop: function(key) {
     this.set(key, {});
+  },
+
+  init: function(key) {
+    if ( this.get(key) ) {
+      throw("key should be globally unique");
+    }
+
+    this.drop(key);
   }
 
 };

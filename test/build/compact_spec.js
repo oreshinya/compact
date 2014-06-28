@@ -9474,8 +9474,14 @@ module.exports = {
     set: function (key, obj) {
         _storage[key] = obj;
     },
-    init: function (key) {
+    drop: function (key) {
         this.set(key, {});
+    },
+    init: function (key) {
+        if (this.get(key)) {
+            throw 'key should be globally unique';
+        }
+        this.drop(key);
     }
 };
 
@@ -9529,7 +9535,7 @@ module.exports = {
         return true;
     },
     destroy: function () {
-        memory.init(this._storageKey);
+        memory.drop(this._storageKey);
     }
 };
 

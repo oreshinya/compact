@@ -21,7 +21,7 @@ module.exports = {
   },
 
   destroy: function() {
-    memory.init(this._storageKey);
+    memory.drop(this._storageKey);
   }
 
 };
