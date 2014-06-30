@@ -9,17 +9,14 @@ depends on localforage.
 
 #Usage
 ```
-var Cat = Compact.extend({
-  key: 'cat',
-  methods: {
-    talk: function() {
-      console.log('nyah!');
-    }
-  }
-});
+var Cat = Compact.extend('cat');
 
 Cat.sampleMethod = function() {
   console.log('sample!');
+};
+
+Cat.instanceBase.talk = function() {
+  console.log('nyah!');
 };
 
 var cat = Cat.init();
@@ -49,9 +46,7 @@ var callback = function() {
 Cat.loadDb(callback);
 
 // inherit
-var Tygar = Cat.extend({
-  key: 'tygar'
-});
+var Tygar = Cat.extend('tygar');
 Tygar.sampleMethod(); //=> sample!
 var tygar = Tygar.init();
 tygar.talk(); //=> nyah!

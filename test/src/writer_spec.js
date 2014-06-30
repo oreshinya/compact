@@ -4,9 +4,7 @@ var assert = require("power-assert"),
 describe('writer', function(){
 
   before(function(){
-    this.Human = Compact.extend({
-      key: 'human'
-    });
+    this.Human = Compact.extend('human');
   });
 
   describe('Compact.save', function(){

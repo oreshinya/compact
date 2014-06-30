@@ -1,6 +1,6 @@
 {
   "name": "compact",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "model and storage wrapper",
   "main": "src/compact.js",
   "dependencies": {},

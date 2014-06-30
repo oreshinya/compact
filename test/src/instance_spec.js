@@ -4,9 +4,7 @@ var assert = require("power-assert"),
 describe('instance', function(){
 
   before(function(){
-    this.Pet = Compact.extend({
-      key: 'pet' 
-    });
+    this.Pet = Compact.extend('pet');
     this.testPetId = 200;
     this.pet = this.Pet.init();
     this.pet.id = this.testPetId;

@@ -13,23 +13,18 @@ describe('core', function(){
     context("receive 'options.key'", function(){
 
       before(function(){
-        var that = this;
-        that.key = 'user';
-        that.User = Compact.extend({
-          key: that.key,
-          methods: {
-            additionalMethod: function(){}
-          }
-        });
-        that.User.fat = function(){};
+        this.key = 'user';
+        this.User = Compact.extend(this.key);
+        this.User.fat = function() {};
+        this.User.instanceBase.additionalMethod = function() {};
       });
 
       it("return object that has '_storageKey' set 'options.key'", function(){
         assert(this.User._storageKey === this.key);
       });
 
-      it("return object that has '_instanceBase'", function(){
-        assert(this.User._instanceBase);
+      it("return object that has 'instanceBase'", function(){
+        assert(this.User.instanceBase);
       });
 
       it("return object that has 'extend'", function(){
@@ -64,12 +59,8 @@ describe('core', function(){
         assert(this.User.loadDb);
       });
 
-      it("return object that's _instanceBase has 'options.methods.additionalMethod'", function(){
-        assert(this.User._instanceBase.additionalMethod);
-      });
-
-      it("does not add 'options.methods.additionalMethod' to Compacts's _instanceBase", function(){
-        assert(!Compact._instanceBase.additionalMethod);
+      it("does not add 'options.methods.additionalMethod' to Compacts's instanceBase", function(){
+        assert(!Compact.instanceBase.additionalMethod);
       });
 
       it("does not add custom method extending object", function() {
@@ -79,13 +70,11 @@ describe('core', function(){
       context("multiple inheritance", function(){
 
         before(function(){
-          this.Police = this.User.extend({
-            key: 'police'
-          });
+          this.Police = this.User.extend('police');
         });
 
-        it("return object that's _instanceBase has 'options.methods.additionalMethod'", function(){
-          assert(this.Police._instanceBase.additionalMethod);
+        it("return object that's instanceBase has 'options.methods.additionalMethod'", function(){
+          assert(this.Police.instanceBase.additionalMethod);
         });
 
         it("return object has extending object's method", function() {
@@ -101,12 +90,8 @@ describe('core', function(){
   describe('Compact.init', function(){
 
     before(function(){
-      this.Animal = Compact.extend({
-        key: 'animal',
-        methods: {
-          additionalMethod: function(){}
-        }
-      });
+      this.Animal = Compact.extend('animal');
+      this.Animal.instanceBase.additionalMethod = function(){};
       this.animal = this.Animal.init();
     });
 
@@ -130,8 +115,8 @@ describe('core', function(){
       assert(this.animal.isAttribute);
     });
 
-    it("return object that has _instanceBases's additionalMethod'", function(){
-      assert(this.animal.additionalMethod === this.Animal._instanceBase.additionalMethod);
+    it("return object that has instanceBases's additionalMethod'", function(){
+      assert(this.animal.additionalMethod === this.Animal.instanceBase.additionalMethod);
     });
 
   });

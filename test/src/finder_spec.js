@@ -12,7 +12,7 @@ var initRobot = function(context) {
 describe('finder', function(){
 
   before(function(){
-    this.Robot = Compact.extend({key: 'robot'});
+    this.Robot = Compact.extend('robot');
     this.Robot.destroy();
   });
 
