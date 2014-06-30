@@ -9667,8 +9667,8 @@ describe('core', function () {
             this.animal = this.Animal.init();
         });
         it('return object that has \'klass\'', function () {
-            assert(assert._expr(assert._capt(assert._capt(assert._capt(assert._capt(this.animal, 'arguments/0/left/object/object').klass, 'arguments/0/left/object').key, 'arguments/0/left') === assert._capt(assert._capt(this.Animal, 'arguments/0/right/object').key, 'arguments/0/right'), 'arguments/0'), {
-                content: 'assert(this.animal.klass.key === this.Animal.key)',
+            assert(assert._expr(assert._capt(assert._capt(assert._capt(this.animal, 'arguments/0/left/object').klass, 'arguments/0/left') === assert._capt(this.Animal, 'arguments/0/right'), 'arguments/0'), {
+                content: 'assert(this.animal.klass === this.Animal)',
                 filepath: '/Users/shinyatakahashi/working/compact/test/src/core_spec.js',
                 line: 99
             }));
