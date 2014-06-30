@@ -1,9 +1,16 @@
 module.exports = (grunt) ->
+  grunt.loadNpmTasks 'grunt-contrib-jshint'
   grunt.loadNpmTasks 'grunt-browserify'
   grunt.loadNpmTasks 'grunt-bower-concat'
   grunt.loadNpmTasks 'grunt-karma'
 
   grunt.initConfig
+    jshint:
+      all: [
+        "src/**/*.js"
+        "test/src/**/*.js"
+      ]
+
     bower_concat:
       all:
         dest: 'test/vendor.js'
@@ -43,6 +50,6 @@ module.exports = (grunt) ->
           reporters: 'dots'
           singleRun: true
 
-  grunt.registerTask "build", ["browserify"]
+  grunt.registerTask "build", ["jshint", "browserify"]
   grunt.registerTask "test", ["bower_concat", "build", "karma"]
   grunt.registerTask "default", ["build"]

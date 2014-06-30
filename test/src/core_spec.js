@@ -112,7 +112,7 @@ describe('core', function(){
 
     it("return object that has 'klass'", function(){
       assert(this.animal.klass.key === this.Animal.key);
-    })
+    });
 
     it("return object that has 'save'", function(){
       assert(this.animal.save);
